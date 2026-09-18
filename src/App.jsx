@@ -8,6 +8,7 @@ import {
 } from './constants';
 import EmployeeModal from './components/EmployeeModal';
 import ReportesView from './components/ReportesView';
+import SedesView from './components/SedesView';
 
 function App() {
   const API_URL = `/api`;
@@ -196,37 +197,49 @@ function App() {
             <FileBarChart size={20} />
             <span>Reportes</span>
           </a>
+          <a href="#" className={`nav-item ${currentView === 'sedes' ? 'active' : ''}`} onClick={(e) => { e.preventDefault(); setCurrentView('sedes'); }}>
+            <Activity size={20} />
+            <span>Por Sede</span>
+          </a>
         </nav>
       </aside>
 
       {/* Main Content */}
       <main className="main-content">
         <header className="top-header">
-          <h1>{currentView === 'nomina' ? 'Control de Nómina' : 'Reportes de Ingresos'}</h1>
+          <h1>
+            {currentView === 'nomina' ? 'Control de Nómina' : 
+             currentView === 'reportes' ? 'Reportes de Ingresos' : 
+             'Recibos por Sede'}
+          </h1>
           <div className="header-actions">
-            <button className="btn btn-outline" onClick={exportToTxt}>
-              <Upload size={18} /> Exportar TXT
-            </button>
-            <button className="btn btn-outline" onClick={exportToExcel}>
-              <Upload size={18} /> Exportar Excel
-            </button>
-            <label className="btn btn-outline" style={{ cursor: 'pointer' }}>
-              <Upload size={18} /> Importar Excel
-              <input type="file" accept=".xlsx, .xls, .csv" style={{ display: 'none' }} onChange={handleFileUpload} />
-            </label>
             {currentView === 'nomina' && (
-              <button className="btn btn-primary" onClick={() => {
-                setEmployeeToEdit(null);
-                setIsModalOpen(true);
-              }}>
-                <Plus size={18} /> Nuevo Empleado
-              </button>
+              <>
+                <button className="btn btn-outline" onClick={exportToTxt}>
+                  <Upload size={18} /> Exportar TXT
+                </button>
+                <button className="btn btn-outline" onClick={exportToExcel}>
+                  <Upload size={18} /> Exportar Excel
+                </button>
+                <label className="btn btn-outline" style={{ cursor: 'pointer' }}>
+                  <Upload size={18} /> Importar Excel
+                  <input type="file" accept=".xlsx, .xls, .csv" style={{ display: 'none' }} onChange={handleFileUpload} />
+                </label>
+                <button className="btn btn-primary" onClick={() => {
+                  setEmployeeToEdit(null);
+                  setIsModalOpen(true);
+                }}>
+                  <Plus size={18} /> Nuevo Empleado
+                </button>
+              </>
             )}
           </div>
         </header>
 
         {currentView === 'reportes' ? (
           <ReportesView employees={employees} />
+        ) : currentView === 'sedes' ? (
+          <SedesView employees={employees} />
         ) : (
           <>
             <div className="stats-grid">
