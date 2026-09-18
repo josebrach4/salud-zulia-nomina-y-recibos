@@ -31,7 +31,9 @@ app.get('/api/empleados', async (req, res) => {
       profesion: r.profesion,
       fechaIngreso: r.fechaingreso,
       salario: r.salario,
-      fechaEgreso: r.fechaegreso
+      fechaEgreso: r.fechaegreso,
+      montoDescuento: r.montodescuento,
+      motivoDescuento: r.motivodescuento
     }));
     res.json(mappedRows);
   } catch (err) {
@@ -40,12 +42,12 @@ app.get('/api/empleados', async (req, res) => {
 });
 
 app.post('/api/empleados', async (req, res) => {
-  const { tipoMovimiento, oficina, nacionalidad, cedula, nombresApellidos, fechaNacimiento, genero, condicionLaboral, cargo, nivelEducativo, profesion, fechaIngreso, salario, fechaEgreso } = req.body;
+  const { tipoMovimiento, oficina, nacionalidad, cedula, nombresApellidos, fechaNacimiento, genero, condicionLaboral, cargo, nivelEducativo, profesion, fechaIngreso, salario, fechaEgreso, montoDescuento, motivoDescuento } = req.body;
   try {
     const { rows } = await pool.query(`
-      INSERT INTO empleados (tipoMovimiento, oficina, nacionalidad, cedula, nombresApellidos, fechaNacimiento, genero, condicionLaboral, cargo, nivelEducativo, profesion, fechaIngreso, salario, fechaEgreso) 
-      VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14) RETURNING *
-    `, [tipoMovimiento || "160", oficina || "1", nacionalidad || "57", cedula, nombresApellidos, fechaNacimiento, genero || "163", condicionLaboral || "94", cargo, nivelEducativo || "111", profesion || "264", fechaIngreso, salario || "0", fechaEgreso || ""]);
+      INSERT INTO empleados (tipoMovimiento, oficina, nacionalidad, cedula, nombresApellidos, fechaNacimiento, genero, condicionLaboral, cargo, nivelEducativo, profesion, fechaIngreso, salario, fechaEgreso, montodescuento, motivodescuento) 
+      VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16) RETURNING *
+    `, [tipoMovimiento || "160", oficina || "1", nacionalidad || "57", cedula, nombresApellidos, fechaNacimiento, genero || "163", condicionLaboral || "94", cargo, nivelEducativo || "111", profesion || "264", fechaIngreso, salario || "0", fechaEgreso || "", montoDescuento || "", motivoDescuento || ""]);
     
     const r = rows[0];
     res.json({
@@ -63,7 +65,9 @@ app.post('/api/empleados', async (req, res) => {
       profesion: r.profesion,
       fechaIngreso: r.fechaingreso,
       salario: r.salario,
-      fechaEgreso: r.fechaegreso
+      fechaEgreso: r.fechaegreso,
+      montoDescuento: r.montodescuento,
+      motivoDescuento: r.motivodescuento
     });
   } catch (err) {
     res.status(500).json({ error: err.message });
@@ -71,12 +75,12 @@ app.post('/api/empleados', async (req, res) => {
 });
 
 app.put('/api/empleados/:id', async (req, res) => {
-  const { tipoMovimiento, oficina, nacionalidad, cedula, nombresApellidos, fechaNacimiento, genero, condicionLaboral, cargo, nivelEducativo, profesion, fechaIngreso, salario, fechaEgreso } = req.body;
+  const { tipoMovimiento, oficina, nacionalidad, cedula, nombresApellidos, fechaNacimiento, genero, condicionLaboral, cargo, nivelEducativo, profesion, fechaIngreso, salario, fechaEgreso, montoDescuento, motivoDescuento } = req.body;
   try {
     const { rowCount } = await pool.query(`
-      UPDATE empleados SET tipoMovimiento = $1, oficina = $2, nacionalidad = $3, cedula = $4, nombresApellidos = $5, fechaNacimiento = $6, genero = $7, condicionLaboral = $8, cargo = $9, nivelEducativo = $10, profesion = $11, fechaIngreso = $12, salario = $13, fechaEgreso = $14 
-      WHERE id = $15
-    `, [tipoMovimiento, oficina, nacionalidad, cedula, nombresApellidos, fechaNacimiento, genero, condicionLaboral, cargo, nivelEducativo, profesion, fechaIngreso, salario, fechaEgreso, req.params.id]);
+      UPDATE empleados SET tipoMovimiento = $1, oficina = $2, nacionalidad = $3, cedula = $4, nombresApellidos = $5, fechaNacimiento = $6, genero = $7, condicionLaboral = $8, cargo = $9, nivelEducativo = $10, profesion = $11, fechaIngreso = $12, salario = $13, fechaEgreso = $14, montodescuento = $15, motivodescuento = $16 
+      WHERE id = $17
+    `, [tipoMovimiento, oficina, nacionalidad, cedula, nombresApellidos, fechaNacimiento, genero, condicionLaboral, cargo, nivelEducativo, profesion, fechaIngreso, salario, fechaEgreso, montoDescuento, motivoDescuento, req.params.id]);
     res.json({ updated: rowCount });
   } catch (err) {
     res.status(500).json({ error: err.message });

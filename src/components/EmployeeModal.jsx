@@ -22,6 +22,8 @@ const initialState = {
   fechaIngreso: "",
   salario: "",
   fechaEgreso: "",
+  montoDescuento: "",
+  motivoDescuento: ""
 };
 
 export default function EmployeeModal({ isOpen, onClose, onSave, employeeToEdit }) {
@@ -29,7 +31,10 @@ export default function EmployeeModal({ isOpen, onClose, onSave, employeeToEdit 
 
   useEffect(() => {
     if (employeeToEdit) {
-      setFormData(employeeToEdit);
+      setFormData({
+        ...initialState,
+        ...employeeToEdit
+      });
     } else {
       setFormData(initialState);
     }
@@ -91,17 +96,29 @@ export default function EmployeeModal({ isOpen, onClose, onSave, employeeToEdit 
     const salarioBase = parseFloat(formData.salario || 0);
     const ivss = salarioBase * 0.04;
     const faov = salarioBase * 0.01;
-    const totalDeducciones = ivss + faov;
+    
+    const extraDiscountAmount = parseFloat(formData.montoDescuento || 0);
+    const totalDeducciones = ivss + faov + extraDiscountAmount;
     const netoPagar = salarioBase - totalDeducciones;
+
+    const receiptBody = [
+      ['Sueldo Básico', salarioBase.toLocaleString('es-VE', { minimumFractionDigits: 2 }), ''],
+      ['Seguro Social (IVSS 4%)', '', ivss.toLocaleString('es-VE', { minimumFractionDigits: 2 })],
+      ['Fondo de Ahorro Obligatorio (FAOV 1%)', '', faov.toLocaleString('es-VE', { minimumFractionDigits: 2 })]
+    ];
+
+    if (extraDiscountAmount > 0) {
+      receiptBody.push([
+        `Descuento: ${formData.motivoDescuento || 'Otros'}`, 
+        '', 
+        extraDiscountAmount.toLocaleString('es-VE', { minimumFractionDigits: 2 })
+      ]);
+    }
 
     autoTable(doc, {
       startY: finalY + 20,
       head: [['Concepto', 'Asignaciones', 'Deducciones']],
-      body: [
-        ['Sueldo Básico', salarioBase.toLocaleString('es-VE', { minimumFractionDigits: 2 }), ''],
-        ['Seguro Social (IVSS 4%)', '', ivss.toLocaleString('es-VE', { minimumFractionDigits: 2 })],
-        ['Fondo de Ahorro Obligatorio (FAOV 1%)', '', faov.toLocaleString('es-VE', { minimumFractionDigits: 2 })]
-      ],
+      body: receiptBody,
       theme: 'grid',
       headStyles: { fillColor: [41, 128, 185], textColor: 255 }
     });
@@ -249,6 +266,31 @@ export default function EmployeeModal({ isOpen, onClose, onSave, employeeToEdit 
               <div className="form-group">
                 <label>Fecha de Egreso</label>
                 <input type="text" name="fechaEgreso" value={formData.fechaEgreso} onChange={handleChange} className="form-control" placeholder="DD-MM-YYYY" />
+              </div>
+
+              <div className="form-group">
+                <label>Monto Descuento</label>
+                <input 
+                  type="number" 
+                  name="montoDescuento" 
+                  step="0.01"
+                  value={formData.montoDescuento} 
+                  onChange={handleChange} 
+                  className="form-control"
+                  placeholder="0.00"
+                />
+              </div>
+
+              <div className="form-group">
+                <label>Motivo Descuento</label>
+                <input 
+                  type="text" 
+                  name="motivoDescuento" 
+                  value={formData.motivoDescuento} 
+                  onChange={handleChange} 
+                  className="form-control" 
+                  placeholder="Ej. Día libre, Adelanto..." 
+                />
               </div>
 
             </div>
