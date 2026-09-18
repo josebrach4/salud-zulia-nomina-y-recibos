@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { X, FileText } from 'lucide-react';
 import jsPDF from 'jspdf';
-import 'jspdf-autotable';
+import autoTable from 'jspdf-autotable';
 import { 
   TIPO_MOVIMIENTO, NACIONALIDAD, GENERO, CONDICION_LABORAL, 
   NIVEL_EDUCATIVO, PROFESION 
@@ -69,7 +69,7 @@ export default function EmployeeModal({ isOpen, onClose, onSave, employeeToEdit 
       ['Condición Laboral:', CONDICION_LABORAL[formData.condicionLaboral], 'Profesión:', PROFESION[formData.profesion]]
     ];
 
-    doc.autoTable({
+    autoTable(doc, {
       startY: 55,
       body: empData,
       theme: 'plain',
@@ -89,13 +89,12 @@ export default function EmployeeModal({ isOpen, onClose, onSave, employeeToEdit 
     doc.text('Detalles de Pago', 14, finalY + 15);
     
     const salarioBase = parseFloat(formData.salario || 0);
-    // Dummy calculations for the receipt (could be customized later)
     const ivss = salarioBase * 0.04;
     const faov = salarioBase * 0.01;
     const totalDeducciones = ivss + faov;
     const netoPagar = salarioBase - totalDeducciones;
 
-    doc.autoTable({
+    autoTable(doc, {
       startY: finalY + 20,
       head: [['Concepto', 'Asignaciones', 'Deducciones']],
       body: [
@@ -110,7 +109,7 @@ export default function EmployeeModal({ isOpen, onClose, onSave, employeeToEdit 
     const finalY2 = doc.lastAutoTable.finalY || finalY + 20;
 
     // Totals
-    doc.autoTable({
+    autoTable(doc, {
       startY: finalY2,
       body: [
         ['Totales', salarioBase.toLocaleString('es-VE', { minimumFractionDigits: 2 }), totalDeducciones.toLocaleString('es-VE', { minimumFractionDigits: 2 })],
