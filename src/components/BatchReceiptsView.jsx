@@ -5,8 +5,7 @@ import { generateReceipt } from '../utils/receiptGenerator';
 
 export default function BatchReceiptsView({ employees }) {
   const [selectedSede, setSelectedSede] = useState('ALL');
-  const [periodoDesde, setPeriodoDesde] = useState('16/02/2026');
-  const [periodoHasta, setPeriodoHasta] = useState('28/02/2026');
+  const [periodo, setPeriodo] = useState('16/02/2026 Al 28/02/2026');
   const [payrollData, setPayrollData] = useState({});
 
   // Unique sedes
@@ -60,8 +59,7 @@ export default function BatchReceiptsView({ employees }) {
     const qty = (field) => parseFloat(raw[field] || 0);
 
     return {
-      periodoDesde,
-      periodoHasta,
+      periodo,
       diasLaborados: raw.diasLaborados,
       diasLaboradosMonto: (qty('diasLaborados') * diario).toFixed(2),
       diasDescanso: raw.diasDescanso,
@@ -120,13 +118,9 @@ export default function BatchReceiptsView({ employees }) {
             ))}
           </select>
         </div>
-        <div className="form-group">
-          <label>Periodo Desde</label>
-          <input type="text" className="form-control" value={periodoDesde} onChange={e => setPeriodoDesde(e.target.value)} />
-        </div>
-        <div className="form-group">
-          <label>Periodo Hasta</label>
-          <input type="text" className="form-control" value={periodoHasta} onChange={e => setPeriodoHasta(e.target.value)} />
+        <div className="form-group" style={{ gridColumn: 'span 2' }}>
+          <label>Periodo (Se mostrará en el recibo)</label>
+          <input type="text" className="form-control" value={periodo} onChange={e => setPeriodo(e.target.value)} />
         </div>
         <div className="form-group" style={{ display: 'flex', alignItems: 'flex-end' }}>
           <button className="btn btn-primary" onClick={handlePrintBatch} style={{ width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem' }}>

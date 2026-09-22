@@ -8,8 +8,7 @@ const getInitialReceiptData = (employee) => {
   const diario = sal / 30;
   
   return {
-    periodoDesde: "16/02/2026",
-    periodoHasta: "28/02/2026",
+    periodo: "16/02/2026 Al 28/02/2026",
     diasLaborados: "8",
     diasLaboradosMonto: (diario * 8).toFixed(2),
     diasDescanso: "6",
@@ -61,14 +60,10 @@ export default function ReceiptModal({ isOpen, onClose, employee }) {
         </div>
         
         <div className="modal-body">
-          <div className="form-grid" style={{ gridTemplateColumns: '1fr 1fr' }}>
+          <div className="form-grid" style={{ gridTemplateColumns: '1fr' }}>
             <div className="form-group">
-              <label>Periodo Desde</label>
-              <input type="text" name="periodoDesde" value={data.periodoDesde} onChange={handleChange} className="form-control" />
-            </div>
-            <div className="form-group">
-              <label>Periodo Hasta</label>
-              <input type="text" name="periodoHasta" value={data.periodoHasta} onChange={handleChange} className="form-control" />
+              <label>Periodo (Texto que se mostrará en el recibo)</label>
+              <input type="text" name="periodo" value={data.periodo || ''} onChange={handleChange} className="form-control" />
             </div>
           </div>
 

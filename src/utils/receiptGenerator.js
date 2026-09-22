@@ -11,33 +11,29 @@ export const generateReceipt = (doc, employee, data, startY = 15) => {
   doc.setFontSize(12);
   doc.setFont('helvetica', 'normal');
   doc.text('Recibo de Pago de Nómina', 14, startY + 15);
-  doc.setFontSize(10);
-  doc.text(`Fecha de Emisión: ${new Date().toLocaleDateString('es-VE')}`, 14, startY + 23);
-  doc.text(`Periodo: ${data.periodoDesde || ''} Al ${data.periodoHasta || ''}`, 14, startY + 29);
   
   // Employee Data
   doc.setFontSize(12);
   doc.setFont('helvetica', 'bold');
-  doc.text('Datos del Trabajador', 14, startY + 40);
+  doc.text('Datos del Trabajador', 14, startY + 28);
   doc.setFontSize(10);
   doc.setFont('helvetica', 'normal');
   
   const empName = employee.nombresApellidos || '';
   const empId = `${NACIONALIDAD[employee.nacionalidad] || 'V'}-${employee.cedula || ''}`;
   const empCargo = employee.cargo || '';
-  const empIngreso = employee.fechaIngreso || '';
   const empDpto = employee.oficina || '';
   const salMensual = parseFloat(employee.salario || 0);
 
   const empData = [
     ['Nombres y Apellidos:', empName, 'Cédula:', empId],
-    ['Cargo:', empCargo, 'Fecha Ingreso:', empIngreso],
+    ['Cargo:', empCargo, 'Sede / Oficina:', empDpto],
     ['Condición Laboral:', CONDICION_LABORAL[employee.condicionLaboral] || '', 'Profesión:', PROFESION[employee.profesion] || ''],
-    ['Sede / Oficina:', empDpto, 'Salario Mensual:', salMensual.toLocaleString('es-VE', { minimumFractionDigits: 2 })]
+    ['Salario Mensual:', salMensual.toLocaleString('es-VE', { minimumFractionDigits: 2 }), 'Periodo:', data.periodo || '']
   ];
 
   autoTable(doc, {
-    startY: startY + 45,
+    startY: startY + 33,
     body: empData,
     theme: 'plain',
     styles: { cellPadding: 2, fontSize: 10 },
