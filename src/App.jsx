@@ -10,6 +10,8 @@ import EmployeeModal from './components/EmployeeModal';
 import ReportesView from './components/ReportesView';
 import SedesView from './components/SedesView';
 
+import BatchReceiptsView from './components/BatchReceiptsView';
+
 function App() {
   const API_URL = `/api`;
   const [employees, setEmployees] = useState([]);
@@ -198,8 +200,8 @@ function App() {
             <span>Reportes</span>
           </a>
           <a href="#" className={`nav-item ${currentView === 'sedes' ? 'active' : ''}`} onClick={(e) => { e.preventDefault(); setCurrentView('sedes'); }}>
-            <Activity size={20} />
-            <span>Por Sede</span>
+            <Printer size={20} />
+            <span>Imprimir Lotes</span>
           </a>
         </nav>
       </aside>
@@ -210,7 +212,7 @@ function App() {
           <h1>
             {currentView === 'nomina' ? 'Control de Nómina' : 
              currentView === 'reportes' ? 'Reportes de Ingresos' : 
-             'Recibos por Sede'}
+             'Impresión de Recibos (Lotes)'}
           </h1>
           <div className="header-actions">
             {currentView === 'nomina' && (
@@ -239,7 +241,7 @@ function App() {
         {currentView === 'reportes' ? (
           <ReportesView employees={employees} />
         ) : currentView === 'sedes' ? (
-          <SedesView employees={employees} />
+          <BatchReceiptsView employees={employees} />
         ) : (
           <>
             <div className="stats-grid">
