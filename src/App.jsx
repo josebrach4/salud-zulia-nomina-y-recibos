@@ -9,8 +9,8 @@ import {
 import EmployeeModal from './components/EmployeeModal';
 import ReportesView from './components/ReportesView';
 import SedesView from './components/SedesView';
-
 import BatchReceiptsView from './components/BatchReceiptsView';
+import NominaTotalView from './components/NominaTotalView';
 
 function App() {
   const API_URL = `/api`;
@@ -203,6 +203,10 @@ function App() {
             <Printer size={20} />
             <span>Imprimir Lotes</span>
           </a>
+          <a href="#" className={`nav-item ${currentView === 'nomina-total' ? 'active' : ''}`} onClick={(e) => { e.preventDefault(); setCurrentView('nomina-total'); }}>
+            <DollarSign size={20} />
+            <span>Nómina Total (Excel)</span>
+          </a>
         </nav>
       </aside>
 
@@ -212,6 +216,7 @@ function App() {
           <h1>
             {currentView === 'nomina' ? 'Control de Nómina' : 
              currentView === 'reportes' ? 'Reportes de Ingresos' : 
+             currentView === 'nomina-total' ? 'Nómina Total (Vista Excel)' :
              'Impresión de Recibos (Lotes)'}
           </h1>
           <div className="header-actions">
@@ -242,6 +247,8 @@ function App() {
           <ReportesView employees={employees} />
         ) : currentView === 'sedes' ? (
           <BatchReceiptsView employees={employees} />
+        ) : currentView === 'nomina-total' ? (
+          <NominaTotalView employees={employees} />
         ) : (
           <>
             <div className="stats-grid">

@@ -25,7 +25,11 @@ const initialState = {
   salario: "",
   fechaEgreso: "",
   montoDescuento: "",
-  motivoDescuento: ""
+  motivoDescuento: "",
+  bonoQuincenal: "",
+  sso: "6.00",
+  faov: "6.50",
+  spf: "1.50"
 };
 
 export default function EmployeeModal({ isOpen, onClose, onSave, employeeToEdit }) {
@@ -36,7 +40,10 @@ export default function EmployeeModal({ isOpen, onClose, onSave, employeeToEdit 
     if (employeeToEdit) {
       setFormData({
         ...initialState,
-        ...employeeToEdit
+        ...employeeToEdit,
+        sso: employeeToEdit.sso || "6.00",
+        faov: employeeToEdit.faov || "6.50",
+        spf: employeeToEdit.spf || "1.50"
       });
     } else {
       setFormData(initialState);
@@ -150,7 +157,7 @@ export default function EmployeeModal({ isOpen, onClose, onSave, employeeToEdit 
                 </div>
 
                 <div className="form-group">
-                  <label>Salario Mensual *</label>
+                  <label>Salario Mensual (en Dólares $) *</label>
                   <input 
                     type="number" 
                     name="salario" 
@@ -164,8 +171,28 @@ export default function EmployeeModal({ isOpen, onClose, onSave, employeeToEdit 
                 </div>
 
                 <div className="form-group">
+                  <label>Bono Quincenal (en Dólares $)</label>
+                  <input type="number" step="0.01" name="bonoQuincenal" value={formData.bonoQuincenal || ''} onChange={handleChange} className="form-control" />
+                </div>
+
+                <div className="form-group">
                   <label>Departamento (Sede)</label>
                   <input required type="text" name="oficina" value={formData.oficina} onChange={handleChange} className="form-control" />
+                </div>
+
+                <h4 style={{ gridColumn: '1 / -1', marginTop: '1rem', marginBottom: '0.5rem' }}>Deducciones Fijas (En Bs)</h4>
+                
+                <div className="form-group">
+                  <label>SSO (Bs)</label>
+                  <input type="number" step="0.01" name="sso" value={formData.sso} onChange={handleChange} className="form-control" />
+                </div>
+                <div className="form-group">
+                  <label>FAOV (Bs)</label>
+                  <input type="number" step="0.01" name="faov" value={formData.faov} onChange={handleChange} className="form-control" />
+                </div>
+                <div className="form-group">
+                  <label>SPF (Bs)</label>
+                  <input type="number" step="0.01" name="spf" value={formData.spf} onChange={handleChange} className="form-control" />
                 </div>
 
                 <div className="form-group">
