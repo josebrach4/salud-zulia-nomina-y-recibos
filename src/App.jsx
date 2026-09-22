@@ -345,7 +345,9 @@ function App() {
         )}
       </main>
 
-      {/* Modal */}
+      <footer style={{ textAlign: 'center', padding: '1rem', color: '#64748b', fontSize: '0.85rem', borderTop: '1px solid #e2e8f0', backgroundColor: '#fff', zIndex: 10 }}>
+        © 2026 Jose Villalobos. Todos los derechos reservados.
+      </footer>      {/* Modal */}
       <EmployeeModal 
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
