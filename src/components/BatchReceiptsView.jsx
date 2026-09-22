@@ -6,6 +6,7 @@ import { generateReceipt } from '../utils/receiptGenerator';
 export default function BatchReceiptsView({ employees }) {
   const [selectedSede, setSelectedSede] = useState('ALL');
   const [periodo, setPeriodo] = useState('16/02/2026 Al 28/02/2026');
+  const [tasa, setTasa] = useState('40.00'); // Default Tasa
   const [payrollData, setPayrollData] = useState({});
 
   // Unique sedes
@@ -54,12 +55,15 @@ export default function BatchReceiptsView({ employees }) {
   const getComputedData = (empId, empSalario) => {
     const raw = payrollData[empId] || {};
     const sal = parseFloat(empSalario || 0);
-    const diario = sal / 30;
+    const tasaNum = parseFloat(tasa || 1);
+    const salBs = sal * tasaNum;
+    const diario = salBs / 30;
 
     const qty = (field) => parseFloat(raw[field] || 0);
 
     return {
       periodo,
+      salarioBs: salBs, // Used by the PDF generator instead of employee.salario
       diasLaborados: raw.diasLaborados,
       diasLaboradosMonto: (qty('diasLaborados') * diario).toFixed(2),
       diasDescanso: raw.diasDescanso,
@@ -72,9 +76,9 @@ export default function BatchReceiptsView({ employees }) {
       horasExtrasMonto: (qty('horasExtras') * (diario / 8) * 1.5).toFixed(2), // assuming 1.5x
       bonoNocturno: raw.bonoNocturno,
       bonoNocturnoMonto: (qty('bonoNocturno') * (diario / 8) * 0.3).toFixed(2), // assuming 30% surcharge
-      sso: (sal * 0.04).toFixed(2),
-      faov: (sal * 0.01).toFixed(2),
-      spf: (sal * 0.005).toFixed(2),
+      sso: (salBs * 0.04).toFixed(2),
+      faov: (salBs * 0.01).toFixed(2),
+      spf: (salBs * 0.005).toFixed(2),
       otrosDescuentos: "0.00"
     };
   };
@@ -101,7 +105,7 @@ export default function BatchReceiptsView({ employees }) {
     <div className="table-container" style={{ padding: '2rem' }}>
       <div className="table-header" style={{ marginBottom: '1.5rem' }}>
         <h2 style={{ fontSize: '1.25rem', fontWeight: '600' }}>Carga de Nómina e Impresión de Recibos</h2>
-        <p style={{ color: 'var(--text-muted)', marginTop: '0.5rem' }}>Ajusta las cantidades por empleado. Los montos se calcularán automáticamente según su salario.</p>
+        <p style={{ color: 'var(--text-muted)', marginTop: '0.5rem' }}>Ajusta las cantidades por empleado. Los montos se calcularán automáticamente según su salario en dólares multiplicado por la Tasa en Bs.</p>
       </div>
       
       <div className="form-grid" style={{ maxWidth: '800px', marginBottom: '2rem' }}>
@@ -118,11 +122,15 @@ export default function BatchReceiptsView({ employees }) {
             ))}
           </select>
         </div>
+        <div className="form-group">
+          <label>Tasa de Cambio (Bs)</label>
+          <input type="number" step="0.01" className="form-control" value={tasa} onChange={e => setTasa(e.target.value)} />
+        </div>
         <div className="form-group" style={{ gridColumn: 'span 2' }}>
           <label>Periodo (Se mostrará en el recibo)</label>
           <input type="text" className="form-control" value={periodo} onChange={e => setPeriodo(e.target.value)} />
         </div>
-        <div className="form-group" style={{ display: 'flex', alignItems: 'flex-end' }}>
+        <div className="form-group" style={{ display: 'flex', alignItems: 'flex-end', gridColumn: 'span 2' }}>
           <button className="btn btn-primary" onClick={handlePrintBatch} style={{ width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem' }}>
             <Printer size={18} /> Imprimir Lote
           </button>

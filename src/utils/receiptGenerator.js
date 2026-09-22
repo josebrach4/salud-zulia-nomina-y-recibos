@@ -23,7 +23,7 @@ export const generateReceipt = (doc, employee, data, startY = 15) => {
   const empId = `${NACIONALIDAD[employee.nacionalidad] || 'V'}-${employee.cedula || ''}`;
   const empCargo = employee.cargo || '';
   const empDpto = employee.oficina || '';
-  const salMensual = parseFloat(employee.salario || 0);
+  const salMensual = parseFloat(data.salarioBs || employee.salario || 0);
 
   const empData = [
     ['Nombres y Apellidos:', empName, 'Cédula:', empId],
