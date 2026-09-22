@@ -134,49 +134,49 @@ export default function NominaTotalView({ employees }) {
         </div>
       </div>
       
-      <div className="table-wrapper" style={{ overflowX: 'auto', border: '1px solid #e2e8f0', borderRadius: '0.5rem', maxHeight: '70vh' }}>
-        <table style={{ minWidth: '2500px', fontSize: '0.75rem', whiteSpace: 'nowrap' }}>
-          <thead style={{ backgroundColor: '#f8fafc', position: 'sticky', top: 0, zIndex: 10 }}>
+      <div className="table-wrapper" style={{ overflowX: 'auto', border: '1px solid #e2e8f0', borderRadius: '0.5rem', maxHeight: '75vh', width: '100%' }}>
+        <table className="nomina-table" style={{ minWidth: 'max-content', fontSize: '0.75rem', whiteSpace: 'nowrap', borderCollapse: 'collapse' }}>
+          <thead style={{ position: 'sticky', top: 0, zIndex: 10 }}>
             <tr>
-              <th rowSpan="2" style={{ position: 'sticky', left: 0, backgroundColor: '#f8fafc', zIndex: 11, borderRight: '2px solid #ccc' }}>No.</th>
-              <th rowSpan="2" style={{ position: 'sticky', left: '40px', backgroundColor: '#f8fafc', zIndex: 11, borderRight: '2px solid #ccc' }}>EMPLEADO</th>
-              <th colSpan="5" style={{ textAlign: 'center', borderRight: '2px solid #ccc', backgroundColor: '#e2e8f0' }}>DATOS BÁSICOS</th>
-              <th colSpan="10" style={{ textAlign: 'center', borderRight: '2px solid #ccc', backgroundColor: '#dbeafe' }}>ASIGNACIONES (Bs)</th>
-              <th colSpan="4" style={{ textAlign: 'center', borderRight: '2px solid #ccc', backgroundColor: '#fce7f3' }}>DEDUCCIONES (Bs)</th>
-              <th colSpan="4" style={{ textAlign: 'center', backgroundColor: '#dcfce3' }}>TOTALES Y DÓLARES</th>
+              <th rowSpan="2" style={{ backgroundColor: '#f8fafc', border: '1px solid #ccc' }}>No.</th>
+              <th rowSpan="2" style={{ backgroundColor: '#f8fafc', border: '1px solid #ccc' }}>EMPLEADO</th>
+              <th colSpan="5" style={{ textAlign: 'center', border: '1px solid #ccc', backgroundColor: '#e2e8f0' }}>DATOS BÁSICOS</th>
+              <th colSpan="10" style={{ textAlign: 'center', border: '1px solid #ccc', backgroundColor: '#dbeafe' }}>ASIGNACIONES (Bs)</th>
+              <th colSpan="4" style={{ textAlign: 'center', border: '1px solid #ccc', backgroundColor: '#fce7f3' }}>DEDUCCIONES (Bs)</th>
+              <th colSpan="4" style={{ textAlign: 'center', border: '1px solid #ccc', backgroundColor: '#dcfce3' }}>TOTALES Y DÓLARES</th>
             </tr>
             <tr>
-              <th>FECHA INGRESO</th>
-              <th>CÉDULA</th>
-              <th>CARGO</th>
-              <th>SALARIO MENSUAL Bs</th>
-              <th style={{ borderRight: '2px solid #ccc' }}>SALARIO DIARIO Bs</th>
+              <th style={{ backgroundColor: '#f8fafc', border: '1px solid #ccc' }}>FECHA INGRESO</th>
+              <th style={{ backgroundColor: '#f8fafc', border: '1px solid #ccc' }}>CÉDULA</th>
+              <th style={{ backgroundColor: '#f8fafc', border: '1px solid #ccc' }}>CARGO</th>
+              <th style={{ backgroundColor: '#f8fafc', border: '1px solid #ccc' }}>SALARIO MENS. Bs</th>
+              <th style={{ backgroundColor: '#f8fafc', border: '1px solid #ccc' }}>SALARIO DIARIO Bs</th>
               
-              <th>S. POR HORA Bs</th>
-              <th>D. LABORADOS</th>
-              <th>MONTO D. TRAB.</th>
-              <th>D. DESC.</th>
-              <th>MONTO D. DESC.</th>
-              <th style={{ backgroundColor: '#bfdbfe', fontWeight: 'bold' }}>TOTAL QUINCENA</th>
-              <th>HORAS EXTRAS</th>
-              <th>MONTO EXTRAS</th>
-              <th>HORAS NOCT.</th>
-              <th>MONTO NOCT.</th>
-              <th>D. FERIADOS</th>
-              <th>MONTO FERIADOS</th>
-              <th>DOMINGOS</th>
-              <th>MONTO DOMINGOS</th>
-              <th style={{ borderRight: '2px solid #ccc', backgroundColor: '#93c5fd', fontWeight: 'bold' }}>TOTAL ASIGN.</th>
+              <th style={{ backgroundColor: '#f8fafc', border: '1px solid #ccc' }}>S. HORA Bs</th>
+              <th style={{ backgroundColor: '#f8fafc', border: '1px solid #ccc' }}>D. LAB</th>
+              <th style={{ backgroundColor: '#f8fafc', border: '1px solid #ccc' }}>MONTO D. TRAB.</th>
+              <th style={{ backgroundColor: '#f8fafc', border: '1px solid #ccc' }}>D. DESC</th>
+              <th style={{ backgroundColor: '#f8fafc', border: '1px solid #ccc' }}>MONTO D. DESC.</th>
+              <th style={{ backgroundColor: '#bfdbfe', border: '1px solid #ccc', fontWeight: 'bold' }}>TOTAL QUINCENA</th>
+              <th style={{ backgroundColor: '#f8fafc', border: '1px solid #ccc' }}>H. EXTRAS</th>
+              <th style={{ backgroundColor: '#f8fafc', border: '1px solid #ccc' }}>MONTO EXTRAS</th>
+              <th style={{ backgroundColor: '#f8fafc', border: '1px solid #ccc' }}>H. NOCT.</th>
+              <th style={{ backgroundColor: '#f8fafc', border: '1px solid #ccc' }}>MONTO NOCT.</th>
+              <th style={{ backgroundColor: '#f8fafc', border: '1px solid #ccc' }}>D. FER.</th>
+              <th style={{ backgroundColor: '#f8fafc', border: '1px solid #ccc' }}>MONTO FERIADOS</th>
+              <th style={{ backgroundColor: '#f8fafc', border: '1px solid #ccc' }}>DOMINGOS</th>
+              <th style={{ backgroundColor: '#f8fafc', border: '1px solid #ccc' }}>MONTO DOMINGOS</th>
+              <th style={{ backgroundColor: '#93c5fd', border: '1px solid #ccc', fontWeight: 'bold' }}>TOTAL ASIGN.</th>
 
-              <th>SSO</th>
-              <th>FAOV</th>
-              <th>SPF</th>
-              <th style={{ borderRight: '2px solid #ccc', backgroundColor: '#fbcfe8', fontWeight: 'bold' }}>TOTAL DEDUC.</th>
+              <th style={{ backgroundColor: '#f8fafc', border: '1px solid #ccc' }}>SSO</th>
+              <th style={{ backgroundColor: '#f8fafc', border: '1px solid #ccc' }}>FAOV</th>
+              <th style={{ backgroundColor: '#f8fafc', border: '1px solid #ccc' }}>SPF</th>
+              <th style={{ backgroundColor: '#fbcfe8', border: '1px solid #ccc', fontWeight: 'bold' }}>TOTAL DEDUC.</th>
 
-              <th style={{ backgroundColor: '#bbf7d0', fontWeight: 'bold' }}>TOTAL A CANCELAR Bs</th>
-              <th>DÓLAR (Quincena)</th>
-              <th>BONO QUINCENAL $</th>
-              <th>DIF. EN $</th>
+              <th style={{ backgroundColor: '#bbf7d0', border: '1px solid #ccc', fontWeight: 'bold' }}>TOTAL CANCELAR Bs</th>
+              <th style={{ backgroundColor: '#f8fafc', border: '1px solid #ccc' }}>DÓLAR (Quincena)</th>
+              <th style={{ backgroundColor: '#f8fafc', border: '1px solid #ccc' }}>BONO QUINC. $</th>
+              <th style={{ backgroundColor: '#f8fafc', border: '1px solid #ccc' }}>DIF. EN $</th>
             </tr>
           </thead>
           <tbody>
@@ -196,55 +196,55 @@ export default function NominaTotalView({ employees }) {
 
               return (
                 <tr key={emp.id} style={{ borderBottom: '1px solid #eee' }}>
-                  <td style={{ position: 'sticky', left: 0, backgroundColor: '#fff', zIndex: 1, borderRight: '2px solid #ccc' }}>{index + 1}</td>
-                  <td style={{ position: 'sticky', left: '40px', backgroundColor: '#fff', zIndex: 1, borderRight: '2px solid #ccc', fontWeight: 'bold' }}>{emp.nombresApellidos}</td>
-                  <td>{emp.fechaIngreso}</td>
-                  <td>{emp.cedula}</td>
-                  <td>{emp.cargo}</td>
-                  <td style={{ fontWeight: 'bold' }}>{fm(computed.salBs)}</td>
-                  <td style={{ borderRight: '2px solid #ccc' }}>{fm(computed.diarioBs)}</td>
+                  <td style={{ backgroundColor: '#fff', border: '1px solid #ccc' }}>{index + 1}</td>
+                  <td style={{ backgroundColor: '#fff', border: '1px solid #ccc', fontWeight: 'bold' }}>{emp.nombresApellidos}</td>
+                  <td style={{ border: '1px solid #ccc' }}>{emp.fechaIngreso}</td>
+                  <td style={{ border: '1px solid #ccc' }}>{emp.cedula}</td>
+                  <td style={{ border: '1px solid #ccc' }}>{emp.cargo}</td>
+                  <td style={{ fontWeight: 'bold', border: '1px solid #ccc' }}>{fm(computed.salBs)}</td>
+                  <td style={{ border: '1px solid #ccc' }}>{fm(computed.diarioBs)}</td>
 
-                  <td>{fm(computed.horaBs)}</td>
-                  <td><input type="number" style={{ width: '50px', padding: '2px' }} value={data.diasLaborados || ''} onChange={e => handleInputChange(emp.id, 'diasLaborados', e.target.value)} /></td>
-                  <td>{fm(computed.montoLaborados)}</td>
-                  <td><input type="number" style={{ width: '50px', padding: '2px' }} value={data.diasDescanso || ''} onChange={e => handleInputChange(emp.id, 'diasDescanso', e.target.value)} /></td>
-                  <td>{fm(computed.montoDescanso)}</td>
-                  <td style={{ backgroundColor: '#eff6ff', fontWeight: 'bold' }}>{fm(computed.totalQuincena)}</td>
-                  <td><input type="number" style={{ width: '50px', padding: '2px' }} value={data.horasExtras || ''} onChange={e => handleInputChange(emp.id, 'horasExtras', e.target.value)} /></td>
-                  <td>{fm(computed.montoExtras)}</td>
-                  <td><input type="number" style={{ width: '50px', padding: '2px' }} value={data.bonoNocturno || ''} onChange={e => handleInputChange(emp.id, 'bonoNocturno', e.target.value)} /></td>
-                  <td>{fm(computed.montoNocturno)}</td>
-                  <td><input type="number" style={{ width: '50px', padding: '2px' }} value={data.diasFeriados || ''} onChange={e => handleInputChange(emp.id, 'diasFeriados', e.target.value)} /></td>
-                  <td>{fm(computed.montoFeriados)}</td>
-                  <td><input type="number" style={{ width: '50px', padding: '2px' }} value={data.domingosTrabajados || ''} onChange={e => handleInputChange(emp.id, 'domingosTrabajados', e.target.value)} /></td>
-                  <td>{fm(computed.montoDomingos)}</td>
-                  <td style={{ borderRight: '2px solid #ccc', backgroundColor: '#dbeafe', fontWeight: 'bold' }}>{fm(computed.totalAsignaciones)}</td>
+                  <td style={{ border: '1px solid #ccc' }}>{fm(computed.horaBs)}</td>
+                  <td style={{ border: '1px solid #ccc' }}><input type="number" style={{ width: '40px', padding: '2px' }} value={data.diasLaborados || ''} onChange={e => handleInputChange(emp.id, 'diasLaborados', e.target.value)} /></td>
+                  <td style={{ border: '1px solid #ccc' }}>{fm(computed.montoLaborados)}</td>
+                  <td style={{ border: '1px solid #ccc' }}><input type="number" style={{ width: '40px', padding: '2px' }} value={data.diasDescanso || ''} onChange={e => handleInputChange(emp.id, 'diasDescanso', e.target.value)} /></td>
+                  <td style={{ border: '1px solid #ccc' }}>{fm(computed.montoDescanso)}</td>
+                  <td style={{ backgroundColor: '#eff6ff', border: '1px solid #ccc', fontWeight: 'bold' }}>{fm(computed.totalQuincena)}</td>
+                  <td style={{ border: '1px solid #ccc' }}><input type="number" style={{ width: '40px', padding: '2px' }} value={data.horasExtras || ''} onChange={e => handleInputChange(emp.id, 'horasExtras', e.target.value)} /></td>
+                  <td style={{ border: '1px solid #ccc' }}>{fm(computed.montoExtras)}</td>
+                  <td style={{ border: '1px solid #ccc' }}><input type="number" style={{ width: '40px', padding: '2px' }} value={data.bonoNocturno || ''} onChange={e => handleInputChange(emp.id, 'bonoNocturno', e.target.value)} /></td>
+                  <td style={{ border: '1px solid #ccc' }}>{fm(computed.montoNocturno)}</td>
+                  <td style={{ border: '1px solid #ccc' }}><input type="number" style={{ width: '40px', padding: '2px' }} value={data.diasFeriados || ''} onChange={e => handleInputChange(emp.id, 'diasFeriados', e.target.value)} /></td>
+                  <td style={{ border: '1px solid #ccc' }}>{fm(computed.montoFeriados)}</td>
+                  <td style={{ border: '1px solid #ccc' }}><input type="number" style={{ width: '40px', padding: '2px' }} value={data.domingosTrabajados || ''} onChange={e => handleInputChange(emp.id, 'domingosTrabajados', e.target.value)} /></td>
+                  <td style={{ border: '1px solid #ccc' }}>{fm(computed.montoDomingos)}</td>
+                  <td style={{ backgroundColor: '#dbeafe', border: '1px solid #ccc', fontWeight: 'bold' }}>{fm(computed.totalAsignaciones)}</td>
 
-                  <td>{fm(computed.sso)}</td>
-                  <td>{fm(computed.faov)}</td>
-                  <td>{fm(computed.spf)}</td>
-                  <td style={{ borderRight: '2px solid #ccc', backgroundColor: '#fce7f3', fontWeight: 'bold' }}>{fm(computed.totalDeducciones)}</td>
+                  <td style={{ border: '1px solid #ccc' }}>{fm(computed.sso)}</td>
+                  <td style={{ border: '1px solid #ccc' }}>{fm(computed.faov)}</td>
+                  <td style={{ border: '1px solid #ccc' }}>{fm(computed.spf)}</td>
+                  <td style={{ backgroundColor: '#fce7f3', border: '1px solid #ccc', fontWeight: 'bold' }}>{fm(computed.totalDeducciones)}</td>
 
-                  <td style={{ backgroundColor: '#dcfce3', fontWeight: 'bold', fontSize: '0.85rem' }}>{fm(computed.totalCancelarBs)}</td>
-                  <td style={{ backgroundColor: '#f8fafc', fontWeight: 'bold' }}>{fm(computed.totalCancelarDolares)}</td>
-                  <td style={{ backgroundColor: '#fef9c3', fontWeight: 'bold' }}>{fm(computed.bonoQuincenal)}</td>
-                  <td style={{ backgroundColor: '#fef08a', fontWeight: 'bold', color: computed.difDolares < 0 ? 'red' : 'black' }}>{fm(computed.difDolares)}</td>
+                  <td style={{ backgroundColor: '#dcfce3', border: '1px solid #ccc', fontWeight: 'bold', fontSize: '0.85rem' }}>{fm(computed.totalCancelarBs)}</td>
+                  <td style={{ backgroundColor: '#f8fafc', border: '1px solid #ccc', fontWeight: 'bold' }}>{fm(computed.totalCancelarDolares)}</td>
+                  <td style={{ backgroundColor: '#fef9c3', border: '1px solid #ccc', fontWeight: 'bold' }}>{fm(computed.bonoQuincenal)}</td>
+                  <td style={{ backgroundColor: '#fef08a', border: '1px solid #ccc', fontWeight: 'bold', color: computed.difDolares < 0 ? 'red' : 'black' }}>{fm(computed.difDolares)}</td>
                 </tr>
               )
             })}
           </tbody>
           <tfoot style={{ position: 'sticky', bottom: 0, backgroundColor: '#f1f5f9', fontWeight: 'bold', zIndex: 10 }}>
             <tr>
-              <td colSpan="5" style={{ textAlign: 'right', padding: '0.5rem', borderRight: '2px solid #ccc' }}>TOTALES ({activeEmployees.length} EMPLEADOS)</td>
-              <td>{sumSalarioMensual.toLocaleString('es-VE', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</td>
-              <td colSpan="14" style={{ borderRight: '2px solid #ccc' }}></td>
-              <td style={{ borderRight: '2px solid #ccc', backgroundColor: '#dbeafe' }}>{sumTotalAsignaciones.toLocaleString('es-VE', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</td>
-              <td colSpan="3"></td>
-              <td style={{ borderRight: '2px solid #ccc', backgroundColor: '#fce7f3' }}>{sumTotalDeducciones.toLocaleString('es-VE', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</td>
-              <td style={{ backgroundColor: '#dcfce3', fontSize: '0.9rem' }}>{sumTotalCancelarBs.toLocaleString('es-VE', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</td>
-              <td>{sumTotalCancelarDolares.toLocaleString('es-VE', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</td>
-              <td style={{ backgroundColor: '#fef9c3' }}>{sumBonoQuincenal.toLocaleString('es-VE', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</td>
-              <td style={{ backgroundColor: '#fef08a' }}>{sumDifDolares.toLocaleString('es-VE', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</td>
+              <td colSpan="5" style={{ textAlign: 'right', padding: '0.5rem', border: '1px solid #ccc' }}>TOTALES ({activeEmployees.length} EMPLEADOS)</td>
+              <td style={{ border: '1px solid #ccc' }}>{sumSalarioMensual.toLocaleString('es-VE', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</td>
+              <td colSpan="14" style={{ border: '1px solid #ccc' }}></td>
+              <td style={{ border: '1px solid #ccc', backgroundColor: '#dbeafe' }}>{sumTotalAsignaciones.toLocaleString('es-VE', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</td>
+              <td colSpan="3" style={{ border: '1px solid #ccc' }}></td>
+              <td style={{ border: '1px solid #ccc', backgroundColor: '#fce7f3' }}>{sumTotalDeducciones.toLocaleString('es-VE', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</td>
+              <td style={{ border: '1px solid #ccc', backgroundColor: '#dcfce3', fontSize: '0.9rem' }}>{sumTotalCancelarBs.toLocaleString('es-VE', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</td>
+              <td style={{ border: '1px solid #ccc' }}>{sumTotalCancelarDolares.toLocaleString('es-VE', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</td>
+              <td style={{ border: '1px solid #ccc', backgroundColor: '#fef9c3' }}>{sumBonoQuincenal.toLocaleString('es-VE', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</td>
+              <td style={{ border: '1px solid #ccc', backgroundColor: '#fef08a' }}>{sumDifDolares.toLocaleString('es-VE', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</td>
             </tr>
           </tfoot>
         </table>
