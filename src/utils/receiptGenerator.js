@@ -1,21 +1,26 @@
 import autoTable from 'jspdf-autotable';
-import { NACIONALIDAD } from '../constants';
+import { NACIONALIDAD, CONDICION_LABORAL, PROFESION } from '../constants';
 
 export const generateReceipt = (doc, employee, data, startY = 15) => {
   const pageWidth = doc.internal.pageSize.width;
   
-  // Title
-  doc.setFontSize(14);
+  // Header
+  doc.setFontSize(18);
   doc.setFont('helvetica', 'bold');
-  doc.text('RECIBO DE PAGO', pageWidth / 2, startY, { align: 'center' });
+  doc.text('Salud Zulia', 14, startY + 7);
+  doc.setFontSize(12);
+  doc.setFont('helvetica', 'normal');
+  doc.text('Recibo de Pago de Nómina', 14, startY + 15);
+  doc.setFontSize(10);
+  doc.text(`Fecha de Emisión: ${new Date().toLocaleDateString('es-VE')}`, 14, startY + 23);
+  doc.text(`Periodo: ${data.periodoDesde || ''} Al ${data.periodoHasta || ''}`, 14, startY + 29);
   
-  // Top Section (Employee Info)
+  // Employee Data
+  doc.setFontSize(12);
+  doc.setFont('helvetica', 'bold');
+  doc.text('Datos del Trabajador', 14, startY + 40);
   doc.setFontSize(10);
   doc.setFont('helvetica', 'normal');
-  
-  const yInfo = startY + 8;
-  const leftColX = 14;
-  const rightColX = pageWidth / 2 + 10;
   
   const empName = employee.nombresApellidos || '';
   const empId = `${NACIONALIDAD[employee.nacionalidad] || 'V'}-${employee.cedula || ''}`;
@@ -23,26 +28,37 @@ export const generateReceipt = (doc, employee, data, startY = 15) => {
   const empIngreso = employee.fechaIngreso || '';
   const empDpto = employee.oficina || '';
   const salMensual = parseFloat(employee.salario || 0);
-  const salDiario = salMensual / 30;
 
-  doc.text(`Empleado: ${empName}`, leftColX, yInfo);
-  doc.text(`Cedula de Identidad: ${empId}`, rightColX, yInfo);
-  
-  doc.text(`Cargo: ${empCargo}`, leftColX, yInfo + 6);
-  doc.text(`Fecha de Ingreso: ${empIngreso}`, rightColX, yInfo + 6);
-  
-  doc.text(`Departamento: ${empDpto}`, rightColX, yInfo + 12);
-  
-  doc.text(`Salario Mensual: ${salMensual.toLocaleString('es-VE', { minimumFractionDigits: 2 })}`, rightColX, yInfo + 18);
-  
-  doc.text(`Periodo a cancelar ${data.periodoDesde || ''} Al ${data.periodoHasta || ''}`, leftColX, yInfo + 24);
-  doc.text(`Diario: ${salDiario.toLocaleString('es-VE', { minimumFractionDigits: 2 })}`, rightColX, yInfo + 24);
+  const empData = [
+    ['Nombres y Apellidos:', empName, 'Cédula:', empId],
+    ['Cargo:', empCargo, 'Fecha Ingreso:', empIngreso],
+    ['Condición Laboral:', CONDICION_LABORAL[employee.condicionLaboral] || '', 'Profesión:', PROFESION[employee.profesion] || ''],
+    ['Sede / Oficina:', empDpto, 'Salario Mensual:', salMensual.toLocaleString('es-VE', { minimumFractionDigits: 2 })]
+  ];
 
-  // Divider Line
-  doc.line(14, yInfo + 26, pageWidth - 14, yInfo + 26);
+  autoTable(doc, {
+    startY: startY + 45,
+    body: empData,
+    theme: 'plain',
+    styles: { cellPadding: 2, fontSize: 10 },
+    columnStyles: {
+      0: { fontStyle: 'bold', cellWidth: 40 },
+      1: { cellWidth: 60 },
+      2: { fontStyle: 'bold', cellWidth: 35 },
+      3: { cellWidth: 45 }
+    }
+  });
 
-  // Table Body (Asignaciones)
+  const finalY = doc.lastAutoTable.finalY;
+
+  // Financial Details Title
+  doc.setFontSize(12);
+  doc.setFont('helvetica', 'bold');
+  doc.text('Detalles de Pago', 14, finalY + 15);
+  doc.setFont('helvetica', 'normal');
+  
   const parseNum = (val) => parseFloat(val || 0);
+  const formatMoney = (val) => val === 0 ? '' : val.toLocaleString('es-VE', { minimumFractionDigits: 2 });
   
   const mLaborados = parseNum(data.diasLaboradosMonto);
   const mDescanso = parseNum(data.diasDescansoMonto);
@@ -61,89 +77,62 @@ export const generateReceipt = (doc, employee, data, startY = 15) => {
   const totalDeducciones = mSso + mFaov + mSpf + mOtrosDescuentos;
   const neto = totalAsignaciones - totalDeducciones;
 
-  const formatMoney = (val) => val === 0 ? '0,00' : val.toLocaleString('es-VE', { minimumFractionDigits: 2 });
-
-  const tableData = [
-    ['Dias laborados', data.diasLaborados || '0', formatMoney(mLaborados), '0,00'],
-    ['Dias de descanso', data.diasDescanso || '0', formatMoney(mDescanso), '0,00'],
-    ['Dias feriados', data.diasFeriados || '0', formatMoney(mFeriados), '0,00'],
-    ['Domingos Trabajados', data.domingosTrabajados || '0', formatMoney(mDomingos), '0,00'],
-    ['Horas extras', data.horasExtras || '0', formatMoney(mHorasExtras), '0,00'],
-    ['Bono nocturno', data.bonoNocturno || '0', formatMoney(mBonoNocturno), '0,00'],
-  ];
-
-  // Draw Main Table
-  autoTable(doc, {
-    startY: yInfo + 28,
-    head: [['DESCRIPCION', '', 'ASIGNACION', 'DEDUCCION']],
-    body: tableData,
-    theme: 'plain',
-    styles: { fontSize: 10, cellPadding: 1 },
-    headStyles: { fontStyle: 'bold', textColor: 0 },
-    columnStyles: {
-      0: { cellWidth: 70 },
-      1: { cellWidth: 20, halign: 'right' },
-      2: { cellWidth: 40, halign: 'right' },
-      3: { cellWidth: 40, halign: 'right' }
-    }
-  });
-
-  let currentY = doc.lastAutoTable.finalY + 2;
-
-  // Total Asignaciones Row
-  doc.setFont('helvetica', 'bold');
-  doc.text('TOTAL ASIGNACIONES', leftColX + 40, currentY + 4);
-  doc.text(formatMoney(totalAsignaciones), leftColX + 116, currentY + 4, { align: 'right' });
+  const receiptBody = [];
   
-  doc.line(14, currentY + 6, pageWidth - 14, currentY + 6);
-  currentY += 8;
+  // Asignaciones (Only add if > 0 or if it's Dias Laborados)
+  if (mLaborados > 0 || data.diasLaborados > 0) receiptBody.push([`Días laborados (${data.diasLaborados})`, formatMoney(mLaborados), '']);
+  if (mDescanso > 0 || data.diasDescanso > 0) receiptBody.push([`Días de descanso (${data.diasDescanso})`, formatMoney(mDescanso), '']);
+  if (mFeriados > 0 || data.diasFeriados > 0) receiptBody.push([`Días feriados (${data.diasFeriados})`, formatMoney(mFeriados), '']);
+  if (mDomingos > 0 || data.domingosTrabajados > 0) receiptBody.push([`Domingos Trabajados (${data.domingosTrabajados})`, formatMoney(mDomingos), '']);
+  if (mHorasExtras > 0 || data.horasExtras > 0) receiptBody.push([`Horas extras (${data.horasExtras})`, formatMoney(mHorasExtras), '']);
+  if (mBonoNocturno > 0 || data.bonoNocturno > 0) receiptBody.push([`Bono nocturno (${data.bonoNocturno})`, formatMoney(mBonoNocturno), '']);
 
   // Deducciones
-  doc.setFont('helvetica', 'normal');
-  const deduccionesData = [
-    ['SSO', '4%', '', formatMoney(mSso)],
-    ['FAOV', '1%', '', formatMoney(mFaov)],
-    ['SPF', '0,50%', '', formatMoney(mSpf)]
-  ];
-  
-  if (mOtrosDescuentos > 0) {
-    deduccionesData.push(['Otros Descuentos', '', '', formatMoney(mOtrosDescuentos)]);
-  }
+  if (mSso > 0) receiptBody.push(['Seguro Social (SSO 4%)', '', formatMoney(mSso)]);
+  if (mFaov > 0) receiptBody.push(['Fondo de Ahorro Obligatorio (FAOV 1%)', '', formatMoney(mFaov)]);
+  if (mSpf > 0) receiptBody.push(['SPF (0.50%)', '', formatMoney(mSpf)]);
+  if (mOtrosDescuentos > 0) receiptBody.push(['Otros Descuentos', '', formatMoney(mOtrosDescuentos)]);
 
   autoTable(doc, {
-    startY: currentY,
-    body: deduccionesData,
-    theme: 'plain',
-    styles: { fontSize: 10, cellPadding: 1 },
+    startY: finalY + 20,
+    head: [['Concepto', 'Asignaciones', 'Deducciones']],
+    body: receiptBody,
+    theme: 'grid',
+    headStyles: { fillColor: [41, 128, 185], textColor: 255 },
     columnStyles: {
-      0: { cellWidth: 70 },
-      1: { cellWidth: 20, halign: 'right' },
-      2: { cellWidth: 40, halign: 'right' },
-      3: { cellWidth: 40, halign: 'right' }
+      1: { halign: 'right', cellWidth: 40 },
+      2: { halign: 'right', cellWidth: 40 }
     }
   });
 
-  currentY = doc.lastAutoTable.finalY + 2;
+  const finalY2 = doc.lastAutoTable.finalY;
 
-  // Total Deducciones
-  doc.setFont('helvetica', 'bold');
-  doc.text('TOTAL DEDUCCIONES', leftColX + 40, currentY + 4);
-  doc.text(formatMoney(totalDeducciones), leftColX + 156, currentY + 4, { align: 'right' });
-  
-  doc.line(14, currentY + 6, pageWidth - 14, currentY + 6);
-  currentY += 8;
+  // Totals
+  autoTable(doc, {
+    startY: finalY2,
+    body: [
+      ['Totales', totalAsignaciones.toLocaleString('es-VE', { minimumFractionDigits: 2 }), totalDeducciones.toLocaleString('es-VE', { minimumFractionDigits: 2 })],
+      ['NETO A COBRAR', '', neto.toLocaleString('es-VE', { minimumFractionDigits: 2 })]
+    ],
+    theme: 'grid',
+    styles: { fontStyle: 'bold', fillColor: [240, 240, 240] },
+    columnStyles: {
+      0: { halign: 'right' },
+      1: { halign: 'right', cellWidth: 40 },
+      2: { halign: 'right', cellWidth: 40 }
+    }
+  });
 
-  // Neto a Cobrar
-  doc.setFontSize(11);
-  doc.text('NETO A COBRAR', leftColX + 90, currentY + 4);
-  doc.text(formatMoney(neto), leftColX + 156, currentY + 4, { align: 'right' });
+  const finalY3 = doc.lastAutoTable.finalY;
 
   // Signatures
-  currentY += 25;
   doc.setFontSize(10);
   doc.setFont('helvetica', 'normal');
-  doc.text('FIRMA DEL TRABAJADOR', pageWidth / 2, currentY, { align: 'center' });
-  doc.text('C.I.', pageWidth / 2, currentY + 5, { align: 'center' });
+  doc.text('_________________________________', 30, finalY3 + 40);
+  doc.text('Firma del Empleador', 45, finalY3 + 46);
+
+  doc.text('_________________________________', 120, finalY3 + 40);
+  doc.text('Firma del Trabajador', 135, finalY3 + 46);
 
   return doc;
 };
