@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Users, DollarSign, Activity, Plus, Search, Upload, FileBarChart } from 'lucide-react';
+import { Users, DollarSign, Activity, Plus, Search, Upload, FileBarChart, Printer } from 'lucide-react';
 import * as XLSX from 'xlsx';
 import axios from 'axios';
 import { 
