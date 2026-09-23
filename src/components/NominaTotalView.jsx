@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { Filter } from 'lucide-react';
+import { Download, Upload } from 'lucide-react';
+
+import * as XLSX from 'xlsx';
 
 export default function NominaTotalView({ employees }) {
   const [tasa, setTasa] = useState('980');
@@ -19,7 +21,8 @@ export default function NominaTotalView({ employees }) {
           diasFeriados: "0",
           domingosTrabajados: "0",
           horasExtras: "0",
-          bonoNocturno: "0"
+          bonoNocturno: "0",
+          guardiasAdicionales: "0"
         };
         changed = true;
       }
@@ -112,6 +115,92 @@ export default function NominaTotalView({ employees }) {
     };
   };
 
+  const handleExportExcel = () => {
+    const dataToExport = activeEmployees.map((emp, index) => {
+      const data = payrollData[emp.id] || {};
+      const computed = getComputedData(emp, data);
+      return {
+        'No.': index + 1,
+        'EMPLEADO': emp.nombresApellidos,
+        'FECHA DE INGRESO': emp.fechaIngreso,
+        'CEDULA': emp.cedula,
+        'CARGO': emp.cargo,
+        'SALARIO MENSUAL': computed.salBs,
+        'SALARIO DIARIO': computed.diarioBs,
+        'S. POR HORA': computed.horaBs,
+        'D.LABORADOS': data.diasLaborados || '0',
+        'MONTO D.TRAB.': computed.montoLaborados,
+        'D. DESC.': data.diasDescanso || '0',
+        'S. DIARIOPARA DESCANSO': computed.sDiarioDescanso,
+        'T. DESCANSO': computed.montoDescanso,
+        'TOTAL QUINCENA': computed.totalQuincena,
+        'CANT. HORAS EXTRAS 1,5': data.horasExtras || '0',
+        'TOTAL HORAS EXTRAS A PAGAR': computed.montoExtras,
+        'GUARDIAS ADICIONALES': data.guardiasAdicionales || '0',
+        'HORAS B.NOCTURNO': data.bonoNocturno || '0',
+        'TOTAL BONO NOCTURNO A PAGAR': computed.montoNocturno,
+        'DIAS FERIADOS': data.diasFeriados || '0',
+        'TOTAL DIAS FERIADOS A PAGAR': computed.montoFeriados,
+        'DOMINGO LABORADO': data.domingosTrabajados || '0',
+        'TOTAL A PAGAR DOMINGOS': computed.montoDomingos,
+        'TOTAL ASIGNACIONES': computed.totalAsignaciones,
+        'SSO 4%': computed.sso,
+        'FAOV 1%': computed.faov,
+        'SPF 0,50%': computed.spf,
+        'TOTAL DEDUCCIONES': computed.totalDeducciones,
+        'TOTAL A CANCELAR': computed.totalCancelarBs,
+        'dolar': computed.totalCancelarDolares,
+        'bono quincenal': computed.bonoQuincenal,
+        'dif. en $': computed.difDolares
+      };
+    });
+
+    const worksheet = XLSX.utils.json_to_sheet(dataToExport);
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, worksheet, "Nomina Total");
+    XLSX.writeFile(workbook, `Nomina_Total_${new Date().getTime()}.xlsx`);
+  };
+
+  const handleImportExcel = (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = (evt) => {
+      const bstr = evt.target.result;
+      const wb = XLSX.read(bstr, { type: 'binary' });
+      const wsname = wb.SheetNames[0];
+      const ws = wb.Sheets[wsname];
+      const data = XLSX.utils.sheet_to_json(ws, { defval: "" });
+
+      if (data.length > 0) {
+        setPayrollData(prev => {
+          const newData = { ...prev };
+          data.forEach(row => {
+            const rawCedula = row['CEDULA']?.toString().replace(/\D/g, '');
+            if (!rawCedula) return;
+            const emp = activeEmployees.find(e => e.cedula.replace(/\D/g, '') === rawCedula);
+            if (emp) {
+              newData[emp.id] = {
+                ...newData[emp.id],
+                diasLaborados: row['D.LABORADOS']?.toString() || "0",
+                diasDescanso: row['D. DESC.']?.toString() || "0",
+                horasExtras: row['CANT. HORAS EXTRAS 1,5']?.toString() || "0",
+                bonoNocturno: row['HORAS B.NOCTURNO']?.toString() || "0",
+                diasFeriados: row['DIAS FERIADOS']?.toString() || "0",
+                domingosTrabajados: row['DOMINGO LABORADO']?.toString() || "0",
+                guardiasAdicionales: row['GUARDIAS ADICIONALES']?.toString() || "0"
+              };
+            }
+          });
+          return newData;
+        });
+      }
+    };
+    reader.readAsBinaryString(file);
+    e.target.value = null; // Reset input
+  };
+
   // Calculate grand totals
   let sumSalarioMensual = 0;
   let sumTotalAsignaciones = 0;
@@ -127,6 +216,15 @@ export default function NominaTotalView({ employees }) {
         <div>
           <h2 style={{ fontSize: '1.25rem', fontWeight: '600' }}>Nómina Total (Excel)</h2>
           <p style={{ color: 'var(--text-muted)', marginTop: '0.5rem' }}>Vista general de la nómina con cálculos automáticos basados en la tasa de cambio.</p>
+          <div style={{ marginTop: '0.5rem', display: 'flex', gap: '0.5rem' }}>
+            <button className="btn btn-outline" style={{ padding: '0.25rem 0.75rem', fontSize: '0.85rem' }} onClick={handleExportExcel}>
+              <Download size={14} style={{ marginRight: '4px' }} /> Exportar a Excel
+            </button>
+            <label className="btn btn-outline" style={{ padding: '0.25rem 0.75rem', fontSize: '0.85rem', cursor: 'pointer', margin: 0 }}>
+              <Upload size={14} style={{ marginRight: '4px' }} /> Importar desde Excel
+              <input type="file" accept=".xlsx, .xls" style={{ display: 'none' }} onChange={handleImportExcel} />
+            </label>
+          </div>
         </div>
         <div style={{ backgroundColor: '#fef3c7', padding: '1rem', borderRadius: '0.5rem', border: '1px solid #f59e0b', display: 'flex', alignItems: 'center', gap: '1rem' }}>
           <label style={{ fontWeight: 'bold', color: '#b45309' }}>TASA (Bs/$):</label>
