@@ -53,23 +53,28 @@ export default function NominaTotalView({ employees }) {
     const dLaborados = qty('diasLaborados');
     const montoLaborados = dLaborados * diarioBs;
 
-    const dDescanso = qty('diasDescanso');
-    const montoDescanso = dDescanso * diarioBs;
-
-    const totalQuincena = montoLaborados + montoDescanso;
-
     const hExtras = qty('horasExtras');
     const montoExtras = hExtras * horaBs * 1.5;
 
     const hNocturno = qty('bonoNocturno');
-    const montoNocturno = hNocturno * horaBs * 0.3;
+    const montoNocturno = hNocturno * horaBs * 1.3;
 
     const dFeriados = qty('diasFeriados');
-    const montoFeriados = dFeriados * diarioBs * 1.5; // Example, adjust if needed
+    const montoFeriados = dFeriados * diarioBs * 1.5;
 
     const dDomingos = qty('domingosTrabajados');
-    const montoDomingos = dDomingos * diarioBs * 1.5; // Example, adjust if needed
+    const montoDomingos = dDomingos * diarioBs * 2;
 
+    const guardiasAdicionales = qty('guardiasAdicionales'); // Info only, no sum
+
+    const dDescanso = qty('diasDescanso');
+    let sDiarioDescanso = 0;
+    if (dLaborados > 0) {
+      sDiarioDescanso = (montoLaborados + montoExtras + montoNocturno + montoFeriados + montoDomingos) / dLaborados;
+    }
+    const montoDescanso = dDescanso * sDiarioDescanso;
+
+    const totalQuincena = montoLaborados + montoDescanso;
     const totalAsignaciones = totalQuincena + montoExtras + montoNocturno + montoFeriados + montoDomingos;
 
     const sso = parseFloat(emp.sso || "6.00");
@@ -79,7 +84,7 @@ export default function NominaTotalView({ employees }) {
     const totalDeducciones = sso + faov + spf;
 
     const totalCancelarBs = totalAsignaciones - totalDeducciones;
-    const totalCancelarDolares = totalCancelarBs / tasaNum;
+    const totalCancelarDolares = tasaNum > 0 ? totalCancelarBs / tasaNum : 0;
 
     const bonoQuincenal = parseFloat(emp.bonoQuincenal || 0);
     const difDolares = bonoQuincenal - totalCancelarDolares;
@@ -89,12 +94,14 @@ export default function NominaTotalView({ employees }) {
       diarioBs,
       horaBs,
       montoLaborados,
+      sDiarioDescanso,
       montoDescanso,
       totalQuincena,
       montoExtras,
       montoNocturno,
       montoFeriados,
       montoDomingos,
+      guardiasAdicionales,
       totalAsignaciones,
       sso, faov, spf,
       totalDeducciones,
@@ -141,7 +148,7 @@ export default function NominaTotalView({ employees }) {
               <th rowSpan="2" style={{ backgroundColor: '#f8fafc', border: '1px solid #ccc' }}>No.</th>
               <th rowSpan="2" style={{ backgroundColor: '#f8fafc', border: '1px solid #ccc' }}>EMPLEADO</th>
               <th colSpan="5" style={{ textAlign: 'center', border: '1px solid #ccc', backgroundColor: '#e2e8f0' }}>DATOS BÁSICOS</th>
-              <th colSpan="10" style={{ textAlign: 'center', border: '1px solid #ccc', backgroundColor: '#dbeafe' }}>ASIGNACIONES (Bs)</th>
+              <th colSpan="12" style={{ textAlign: 'center', border: '1px solid #ccc', backgroundColor: '#dbeafe' }}>ASIGNACIONES (Bs)</th>
               <th colSpan="4" style={{ textAlign: 'center', border: '1px solid #ccc', backgroundColor: '#fce7f3' }}>DEDUCCIONES (Bs)</th>
               <th colSpan="4" style={{ textAlign: 'center', border: '1px solid #ccc', backgroundColor: '#dcfce3' }}>TOTALES Y DÓLARES</th>
             </tr>
@@ -156,10 +163,12 @@ export default function NominaTotalView({ employees }) {
               <th style={{ backgroundColor: '#f8fafc', border: '1px solid #ccc' }}>D. LAB</th>
               <th style={{ backgroundColor: '#f8fafc', border: '1px solid #ccc' }}>MONTO D. TRAB.</th>
               <th style={{ backgroundColor: '#f8fafc', border: '1px solid #ccc' }}>D. DESC</th>
-              <th style={{ backgroundColor: '#f8fafc', border: '1px solid #ccc' }}>MONTO D. DESC.</th>
+              <th style={{ backgroundColor: '#f8fafc', border: '1px solid #ccc' }}>S. DIARIO DESC.</th>
+              <th style={{ backgroundColor: '#f8fafc', border: '1px solid #ccc' }}>T. DESCANSO</th>
               <th style={{ backgroundColor: '#bfdbfe', border: '1px solid #ccc', fontWeight: 'bold' }}>TOTAL QUINCENA</th>
               <th style={{ backgroundColor: '#f8fafc', border: '1px solid #ccc' }}>H. EXTRAS</th>
               <th style={{ backgroundColor: '#f8fafc', border: '1px solid #ccc' }}>MONTO EXTRAS</th>
+              <th style={{ backgroundColor: '#f8fafc', border: '1px solid #ccc' }}>GUARDIAS</th>
               <th style={{ backgroundColor: '#f8fafc', border: '1px solid #ccc' }}>H. NOCT.</th>
               <th style={{ backgroundColor: '#f8fafc', border: '1px solid #ccc' }}>MONTO NOCT.</th>
               <th style={{ backgroundColor: '#f8fafc', border: '1px solid #ccc' }}>D. FER.</th>
@@ -208,10 +217,12 @@ export default function NominaTotalView({ employees }) {
                   <td style={{ border: '1px solid #ccc' }}><input type="number" style={{ width: '40px', padding: '2px' }} value={data.diasLaborados || ''} onChange={e => handleInputChange(emp.id, 'diasLaborados', e.target.value)} /></td>
                   <td style={{ border: '1px solid #ccc' }}>{fm(computed.montoLaborados)}</td>
                   <td style={{ border: '1px solid #ccc' }}><input type="number" style={{ width: '40px', padding: '2px' }} value={data.diasDescanso || ''} onChange={e => handleInputChange(emp.id, 'diasDescanso', e.target.value)} /></td>
+                  <td style={{ border: '1px solid #ccc', backgroundColor: '#f8fafc' }}>{fm(computed.sDiarioDescanso)}</td>
                   <td style={{ border: '1px solid #ccc' }}>{fm(computed.montoDescanso)}</td>
                   <td style={{ backgroundColor: '#eff6ff', border: '1px solid #ccc', fontWeight: 'bold' }}>{fm(computed.totalQuincena)}</td>
                   <td style={{ border: '1px solid #ccc' }}><input type="number" style={{ width: '40px', padding: '2px' }} value={data.horasExtras || ''} onChange={e => handleInputChange(emp.id, 'horasExtras', e.target.value)} /></td>
                   <td style={{ border: '1px solid #ccc' }}>{fm(computed.montoExtras)}</td>
+                  <td style={{ border: '1px solid #ccc' }}><input type="number" style={{ width: '40px', padding: '2px' }} value={data.guardiasAdicionales || ''} onChange={e => handleInputChange(emp.id, 'guardiasAdicionales', e.target.value)} /></td>
                   <td style={{ border: '1px solid #ccc' }}><input type="number" style={{ width: '40px', padding: '2px' }} value={data.bonoNocturno || ''} onChange={e => handleInputChange(emp.id, 'bonoNocturno', e.target.value)} /></td>
                   <td style={{ border: '1px solid #ccc' }}>{fm(computed.montoNocturno)}</td>
                   <td style={{ border: '1px solid #ccc' }}><input type="number" style={{ width: '40px', padding: '2px' }} value={data.diasFeriados || ''} onChange={e => handleInputChange(emp.id, 'diasFeriados', e.target.value)} /></td>
@@ -237,7 +248,7 @@ export default function NominaTotalView({ employees }) {
             <tr>
               <td colSpan="5" style={{ textAlign: 'right', padding: '0.5rem', border: '1px solid #ccc' }}>TOTALES ({activeEmployees.length} EMPLEADOS)</td>
               <td style={{ border: '1px solid #ccc' }}>{sumSalarioMensual.toLocaleString('es-VE', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</td>
-              <td colSpan="14" style={{ border: '1px solid #ccc' }}></td>
+              <td colSpan="17" style={{ border: '1px solid #ccc' }}></td>
               <td style={{ border: '1px solid #ccc', backgroundColor: '#dbeafe' }}>{sumTotalAsignaciones.toLocaleString('es-VE', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</td>
               <td colSpan="3" style={{ border: '1px solid #ccc' }}></td>
               <td style={{ border: '1px solid #ccc', backgroundColor: '#fce7f3' }}>{sumTotalDeducciones.toLocaleString('es-VE', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</td>
