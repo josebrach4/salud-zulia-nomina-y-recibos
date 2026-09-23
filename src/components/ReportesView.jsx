@@ -5,6 +5,7 @@ import { CONDICION_LABORAL, PROFESION } from '../constants';
 const ReportesView = ({ employees }) => {
   const [mes, setMes] = useState('');
   const [anio, setAnio] = useState(new Date().getFullYear().toString());
+  const [searchTerm, setSearchTerm] = useState('');
 
   // Extraer años únicos de los ingresos
   const aniosDisponibles = useMemo(() => {
@@ -41,11 +42,14 @@ const ReportesView = ({ employees }) => {
 
       const matchMes = mes === '' || m === mes;
       const matchAnio = anio === '' || y === anio;
-      // Solo ingresos (159) o todos los que entraron en esa fecha independientemente de si están activos (160)
-      // Asumiremos que si tienen fecha de ingreso en ese mes, fueron un ingreso.
-      return matchMes && matchAnio;
+      const matchSearch = searchTerm === '' || 
+        emp.nombresApellidos?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        emp.cedula?.includes(searchTerm) ||
+        emp.cargo?.toLowerCase().includes(searchTerm.toLowerCase());
+
+      return matchMes && matchAnio && matchSearch;
     });
-  }, [employees, mes, anio]);
+  }, [employees, mes, anio, searchTerm]);
 
   const meses = [
     { value: '01', label: 'Enero' },
@@ -64,7 +68,7 @@ const ReportesView = ({ employees }) => {
 
   return (
     <div className="reportes-container" style={{ padding: '2rem' }}>
-      <div className="header-actions" style={{ marginBottom: '2rem', display: 'flex', gap: '1rem', alignItems: 'center' }}>
+      <div className="header-actions" style={{ marginBottom: '2rem', display: 'flex', gap: '1rem', alignItems: 'center', flexWrap: 'wrap' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', background: 'white', padding: '0.5rem 1rem', borderRadius: '8px', border: '1px solid #e2e8f0' }}>
           <Calendar size={18} color="var(--text-muted)" />
           <select value={mes} onChange={(e) => setMes(e.target.value)} style={{ border: 'none', outline: 'none', background: 'transparent' }}>
@@ -81,6 +85,16 @@ const ReportesView = ({ employees }) => {
               <option key={a} value={a}>{a}</option>
             ))}
           </select>
+        </div>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', background: 'white', padding: '0.5rem 1rem', borderRadius: '8px', border: '1px solid #e2e8f0', flex: '1 1 200px' }}>
+          <Search size={18} color="var(--text-muted)" />
+          <input 
+            type="text" 
+            placeholder="Buscar por nombre, cédula o cargo..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            style={{ border: 'none', outline: 'none', background: 'transparent', width: '100%' }}
+          />
         </div>
       </div>
 

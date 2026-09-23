@@ -6,8 +6,15 @@ import * as XLSX from 'xlsx';
 export default function NominaTotalView({ employees }) {
   const [tasa, setTasa] = useState('980');
   const [payrollData, setPayrollData] = useState({});
+  const [searchTerm, setSearchTerm] = useState('');
 
   const activeEmployees = employees.filter(emp => emp.tipoMovimiento === "160");
+  
+  const displayedEmployees = activeEmployees.filter(emp => 
+    emp.nombresApellidos?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    emp.cedula?.includes(searchTerm) ||
+    emp.cargo?.toLowerCase().includes(searchTerm.toLowerCase())
+  );
 
   useEffect(() => {
     const newData = { ...payrollData };
@@ -116,7 +123,7 @@ export default function NominaTotalView({ employees }) {
   };
 
   const handleExportExcel = () => {
-    const dataToExport = activeEmployees.map((emp, index) => {
+    const dataToExport = displayedEmployees.map((emp, index) => {
       const data = payrollData[emp.id] || {};
       const computed = getComputedData(emp, data);
       return {
@@ -216,7 +223,7 @@ export default function NominaTotalView({ employees }) {
         <div>
           <h2 style={{ fontSize: '1.25rem', fontWeight: '600' }}>Nómina Total (Excel)</h2>
           <p style={{ color: 'var(--text-muted)', marginTop: '0.5rem' }}>Vista general de la nómina con cálculos automáticos basados en la tasa de cambio.</p>
-          <div style={{ marginTop: '0.5rem', display: 'flex', gap: '0.5rem' }}>
+          <div style={{ marginTop: '0.5rem', display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
             <button className="btn btn-outline" style={{ padding: '0.25rem 0.75rem', fontSize: '0.85rem' }} onClick={handleExportExcel}>
               <Download size={14} style={{ marginRight: '4px' }} /> Exportar a Excel
             </button>
@@ -224,6 +231,14 @@ export default function NominaTotalView({ employees }) {
               <Upload size={14} style={{ marginRight: '4px' }} /> Importar desde Excel
               <input type="file" accept=".xlsx, .xls" style={{ display: 'none' }} onChange={handleImportExcel} />
             </label>
+            <input 
+              type="text" 
+              className="form-control" 
+              style={{ width: '250px', padding: '0.25rem 0.75rem', fontSize: '0.85rem' }} 
+              placeholder="Buscar por nombre, cédula o cargo..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+            />
           </div>
         </div>
         <div style={{ backgroundColor: '#fef3c7', padding: '1rem', borderRadius: '0.5rem', border: '1px solid #f59e0b', display: 'flex', alignItems: 'center', gap: '1rem' }}>
@@ -287,7 +302,7 @@ export default function NominaTotalView({ employees }) {
             </tr>
           </thead>
           <tbody>
-            {activeEmployees.map((emp, index) => {
+            {displayedEmployees.map((emp, index) => {
               const data = payrollData[emp.id] || {};
               const computed = getComputedData(emp, data);
               const fm = (val) => val.toLocaleString('es-VE', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
@@ -344,7 +359,7 @@ export default function NominaTotalView({ employees }) {
           </tbody>
           <tfoot style={{ position: 'sticky', bottom: 0, backgroundColor: '#f1f5f9', fontWeight: 'bold', zIndex: 10 }}>
             <tr>
-              <td colSpan="5" style={{ textAlign: 'right', padding: '0.5rem', border: '1px solid #ccc' }}>TOTALES ({activeEmployees.length} EMPLEADOS)</td>
+              <td colSpan="5" style={{ textAlign: 'right', padding: '0.5rem', border: '1px solid #ccc' }}>TOTALES ({displayedEmployees.length} EMPLEADOS)</td>
               <td style={{ border: '1px solid #ccc' }}>{sumSalarioMensual.toLocaleString('es-VE', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</td>
               <td colSpan="17" style={{ border: '1px solid #ccc' }}></td>
               <td style={{ border: '1px solid #ccc', backgroundColor: '#dbeafe' }}>{sumTotalAsignaciones.toLocaleString('es-VE', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</td>

@@ -9,14 +9,22 @@ export default function BatchReceiptsView({ employees }) {
   const [tasa, setTasa] = useState('40.00'); // Default Tasa
   const [payrollData, setPayrollData] = useState({});
 
+  const [searchTerm, setSearchTerm] = useState('');
+
   // Unique sedes
   const sedes = [...new Set(employees.map(emp => emp.oficina).filter(Boolean))].sort();
 
   // Filter employees
   const activeEmployees = employees.filter(emp => emp.tipoMovimiento === "160");
+  const filteredBySearch = activeEmployees.filter(emp => 
+    emp.nombresApellidos?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    emp.cedula?.includes(searchTerm) ||
+    emp.cargo?.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+  
   const displayedEmployees = selectedSede === 'ALL' 
-    ? activeEmployees 
-    : activeEmployees.filter(emp => emp.oficina === selectedSede);
+    ? filteredBySearch 
+    : filteredBySearch.filter(emp => emp.oficina === selectedSede);
 
   // Initialize payroll data when employees change
   useEffect(() => {
@@ -108,8 +116,18 @@ export default function BatchReceiptsView({ employees }) {
         <p style={{ color: 'var(--text-muted)', marginTop: '0.5rem' }}>Ajusta las cantidades por empleado. Los montos se calcularán automáticamente según su salario en dólares multiplicado por la Tasa en Bs.</p>
       </div>
       
-      <div className="form-grid" style={{ maxWidth: '800px', marginBottom: '2rem' }}>
-        <div className="form-group">
+      <div className="form-grid" style={{ maxWidth: '1000px', marginBottom: '2rem', display: 'flex', gap: '1rem', flexWrap: 'wrap' }}>
+        <div className="form-group" style={{ flex: '1 1 300px' }}>
+          <label>Buscar Empleado</label>
+          <input 
+            type="text" 
+            className="form-control" 
+            placeholder="Buscar por nombre, cédula o cargo..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+          />
+        </div>
+        <div className="form-group" style={{ flex: '1 1 200px' }}>
           <label><Filter size={14} style={{ display: 'inline', marginRight: '4px' }}/> Filtrar por Sede</label>
           <select 
             className="form-control" 
