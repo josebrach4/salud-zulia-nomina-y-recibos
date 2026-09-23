@@ -397,3 +397,18 @@ select.form-control {
   justify-content: flex-end;
   gap: 1rem;
 }
+
+@media print {
+  @page { size: landscape; }
+  .sidebar, .top-header, .header-actions, .search-box, footer, button, .btn {
+    display: none !important;
+  }
+  .app-container { display: block !important; }
+  .main-content { padding: 0 !important; overflow: visible !important; }
+  body { background: white !important; }
+  .table-container { box-shadow: none !important; border: none !important; }
+  .data-table { width: 100% !important; border-collapse: collapse !important; }
+  .data-table th, .data-table td { border: 1px solid #000 !important; }
+  ::-webkit-scrollbar { display: none !important; }
+  .table-responsive { overflow: visible !important; }
+}

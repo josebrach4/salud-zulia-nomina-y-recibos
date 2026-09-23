@@ -233,6 +233,9 @@ function App() {
           </div>
 
           <div className="header-actions" style={{ flexShrink: 0 }}>
+            <button className="btn btn-outline" onClick={() => window.print()} title="Imprimir la tabla actual">
+              <Printer size={18} /> Imprimir Pantalla
+            </button>
             {currentView === 'nomina' && (
               <>
                 <button className="btn btn-primary" onClick={() => {
