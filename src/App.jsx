@@ -109,9 +109,10 @@ function App() {
 
   // Filtrado
   const filteredEmployees = employees.filter(emp => 
-    emp.nombresApellidos.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    emp.cedula.includes(searchTerm) ||
-    emp.cargo.toLowerCase().includes(searchTerm.toLowerCase())
+    !searchTerm ||
+    emp.nombresApellidos?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    emp.cedula?.includes(searchTerm) ||
+    emp.cargo?.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   // Exportar TXT para SUDEASEG
@@ -212,43 +213,55 @@ function App() {
 
       {/* Main Content */}
       <main className="main-content">
-        <header className="top-header">
-          <h1>
+        <header className="top-header" style={{ display: 'flex', alignItems: 'center', gap: '1rem', flexWrap: 'wrap' }}>
+          <h1 style={{ margin: 0, fontSize: '1.5rem', whiteSpace: 'nowrap' }}>
             {currentView === 'nomina' ? 'Control de Nómina' : 
              currentView === 'reportes' ? 'Reportes de Ingresos' : 
              currentView === 'nomina-total' ? 'Nómina Total (Vista Excel)' :
              'Impresión de Recibos (Lotes)'}
           </h1>
-          <div className="header-actions">
+
+          <div className="search-box" style={{ flex: '1 1 300px', display: 'flex', alignItems: 'center', gap: '0.5rem', background: '#fff', padding: '0.5rem 1rem', borderRadius: '8px', border: '1px solid #e2e8f0', minWidth: '250px' }}>
+            <Search size={18} color="var(--text-muted)" />
+            <input 
+              type="text" 
+              placeholder="Buscar por nombre, cédula o cargo..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              style={{ border: 'none', outline: 'none', background: 'transparent', width: '100%' }}
+            />
+          </div>
+
+          <div className="header-actions" style={{ flexShrink: 0 }}>
             {currentView === 'nomina' && (
               <>
-                <button className="btn btn-outline" onClick={exportToTxt}>
-                  <Upload size={18} /> Exportar TXT
-                </button>
-                <button className="btn btn-outline" onClick={exportToExcel}>
-                  <Upload size={18} /> Exportar Excel
-                </button>
-                <label className="btn btn-outline" style={{ cursor: 'pointer' }}>
-                  <Upload size={18} /> Importar Excel
-                  <input type="file" accept=".xlsx, .xls, .csv" style={{ display: 'none' }} onChange={handleFileUpload} />
-                </label>
                 <button className="btn btn-primary" onClick={() => {
                   setEmployeeToEdit(null);
                   setIsModalOpen(true);
                 }}>
                   <Plus size={18} /> Nuevo Empleado
                 </button>
+                <button className="btn btn-outline" onClick={exportToTxt}>
+                  <Upload size={18} /> Exportar TXT
+                </button>
+                <button className="btn btn-outline" onClick={exportToExcel}>
+                  <Upload size={18} /> Exportar Excel
+                </button>
+                <label className="btn btn-outline" style={{ cursor: 'pointer', margin: 0 }}>
+                  <Upload size={18} /> Importar Excel
+                  <input type="file" accept=".xlsx, .xls, .csv" style={{ display: 'none' }} onChange={handleFileUpload} />
+                </label>
               </>
             )}
           </div>
         </header>
 
         {currentView === 'reportes' ? (
-          <ReportesView employees={employees} />
+          <ReportesView employees={employees} searchTerm={searchTerm} />
         ) : currentView === 'sedes' ? (
-          <BatchReceiptsView employees={employees} />
+          <BatchReceiptsView employees={employees} searchTerm={searchTerm} />
         ) : currentView === 'nomina-total' ? (
-          <NominaTotalView employees={employees} />
+          <NominaTotalView employees={employees} searchTerm={searchTerm} />
         ) : (
           <>
             <div className="stats-grid">
@@ -279,15 +292,6 @@ function App() {
             <div className="table-container">
               <div className="table-header">
                 <h2 style={{ fontSize: '1.125rem', fontWeight: '600' }}>Directorio de Empleados</h2>
-                <div className="search-box">
-                  <Search size={18} color="var(--text-muted)" />
-                  <input 
-                    type="text" 
-                    placeholder="Buscar por nombre, cédula o cargo..." 
-                    value={searchTerm}
-                    onChange={(e) => setSearchTerm(e.target.value)}
-                  />
-                </div>
               </div>
               
               <div className="table-wrapper">
@@ -343,11 +347,12 @@ function App() {
             </div>
           </>
         )}
+        <footer style={{ textAlign: 'center', padding: '1.5rem', color: '#64748b', fontSize: '0.85rem', marginTop: 'auto', paddingTop: '2rem' }}>
+          © 2026 Jose Villalobos. Todos los derechos reservados.
+        </footer>
       </main>
 
-      <footer style={{ textAlign: 'center', padding: '1rem', color: '#64748b', fontSize: '0.85rem', borderTop: '1px solid #e2e8f0', backgroundColor: '#fff', zIndex: 10 }}>
-        © 2026 Jose Villalobos. Todos los derechos reservados.
-      </footer>      {/* Modal */}
+      {/* Modal */}
       <EmployeeModal 
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}

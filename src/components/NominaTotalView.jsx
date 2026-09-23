@@ -3,14 +3,14 @@ import { Download, Upload } from 'lucide-react';
 
 import * as XLSX from 'xlsx';
 
-export default function NominaTotalView({ employees }) {
+export default function NominaTotalView({ employees, searchTerm }) {
   const [tasa, setTasa] = useState('980');
   const [payrollData, setPayrollData] = useState({});
-  const [searchTerm, setSearchTerm] = useState('');
 
   const activeEmployees = employees.filter(emp => emp.tipoMovimiento === "160");
   
   const displayedEmployees = activeEmployees.filter(emp => 
+    !searchTerm ||
     emp.nombresApellidos?.toLowerCase().includes(searchTerm.toLowerCase()) ||
     emp.cedula?.includes(searchTerm) ||
     emp.cargo?.toLowerCase().includes(searchTerm.toLowerCase())
@@ -231,14 +231,6 @@ export default function NominaTotalView({ employees }) {
               <Upload size={14} style={{ marginRight: '4px' }} /> Importar desde Excel
               <input type="file" accept=".xlsx, .xls" style={{ display: 'none' }} onChange={handleImportExcel} />
             </label>
-            <input 
-              type="text" 
-              className="form-control" 
-              style={{ width: '250px', padding: '0.25rem 0.75rem', fontSize: '0.85rem' }} 
-              placeholder="Buscar por nombre, cédula o cargo..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-            />
           </div>
         </div>
         <div style={{ backgroundColor: '#fef3c7', padding: '1rem', borderRadius: '0.5rem', border: '1px solid #f59e0b', display: 'flex', alignItems: 'center', gap: '1rem' }}>

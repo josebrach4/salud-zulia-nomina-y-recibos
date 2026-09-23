@@ -2,10 +2,9 @@ import React, { useState, useMemo } from 'react';
 import { Calendar, Search } from 'lucide-react';
 import { CONDICION_LABORAL, PROFESION } from '../constants';
 
-const ReportesView = ({ employees }) => {
+const ReportesView = ({ employees, searchTerm }) => {
   const [mes, setMes] = useState('');
   const [anio, setAnio] = useState(new Date().getFullYear().toString());
-  const [searchTerm, setSearchTerm] = useState('');
 
   // Extraer años únicos de los ingresos
   const aniosDisponibles = useMemo(() => {
@@ -42,7 +41,7 @@ const ReportesView = ({ employees }) => {
 
       const matchMes = mes === '' || m === mes;
       const matchAnio = anio === '' || y === anio;
-      const matchSearch = searchTerm === '' || 
+      const matchSearch = !searchTerm || 
         emp.nombresApellidos?.toLowerCase().includes(searchTerm.toLowerCase()) ||
         emp.cedula?.includes(searchTerm) ||
         emp.cargo?.toLowerCase().includes(searchTerm.toLowerCase());
@@ -85,16 +84,6 @@ const ReportesView = ({ employees }) => {
               <option key={a} value={a}>{a}</option>
             ))}
           </select>
-        </div>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', background: 'white', padding: '0.5rem 1rem', borderRadius: '8px', border: '1px solid #e2e8f0', flex: '1 1 200px' }}>
-          <Search size={18} color="var(--text-muted)" />
-          <input 
-            type="text" 
-            placeholder="Buscar por nombre, cédula o cargo..."
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            style={{ border: 'none', outline: 'none', background: 'transparent', width: '100%' }}
-          />
         </div>
       </div>
 
