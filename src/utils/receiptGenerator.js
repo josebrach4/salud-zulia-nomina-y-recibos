@@ -5,29 +5,29 @@ import { LOGO_BASE64 } from './logoBase64';
 export const generateReceipt = (doc, employee, data, startY = 15) => {
   const pageWidth = doc.internal.pageSize.width;
   
-  // Logo
+  // Logo centered at top (the logo already contains all branding text)
+  const logoWidth = 50;
+  const logoHeight = 50;
+  const logoX = (pageWidth - logoWidth) / 2;
   try {
-    doc.addImage(LOGO_BASE64, 'JPEG', 14, startY, 25, 25);
+    doc.addImage(LOGO_BASE64, 'JPEG', logoX, startY, logoWidth, logoHeight);
   } catch (e) {
-    console.warn('Could not add logo:', e);
+    // Fallback text if logo fails
+    doc.setFontSize(16);
+    doc.setFont('helvetica', 'bold');
+    doc.text('Plan Médico Salud Zulia', pageWidth / 2, startY + 20, { align: 'center' });
   }
 
-  // Header (offset to the right of the logo)
-  doc.setFontSize(16);
+  // Subtitle below logo
+  doc.setFontSize(12);
   doc.setFont('helvetica', 'bold');
-  doc.text('Plan Médico Salud Zulia', 44, startY + 8);
-  doc.setFontSize(11);
+  doc.text('Recibo de Pago de Nómina', pageWidth / 2, startY + 56, { align: 'center' });
   doc.setFont('helvetica', 'normal');
-  doc.text('Recibo de Pago de Nómina', 44, startY + 15);
-  doc.setFontSize(8);
-  doc.setTextColor(100);
-  doc.text('Desde 2000', 44, startY + 20);
-  doc.setTextColor(0);
   
   // Employee Data
   doc.setFontSize(12);
   doc.setFont('helvetica', 'bold');
-  doc.text('Datos del Trabajador', 14, startY + 35);
+  doc.text('Datos del Trabajador', 14, startY + 65);
   doc.setFontSize(10);
   doc.setFont('helvetica', 'normal');
   
@@ -45,7 +45,7 @@ export const generateReceipt = (doc, employee, data, startY = 15) => {
   ];
 
   autoTable(doc, {
-    startY: startY + 40,
+    startY: startY + 70,
     body: empData,
     theme: 'plain',
     styles: { cellPadding: 2, fontSize: 10 },
