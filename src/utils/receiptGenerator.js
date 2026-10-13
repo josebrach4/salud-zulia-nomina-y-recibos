@@ -1,21 +1,33 @@
 import autoTable from 'jspdf-autotable';
 import { NACIONALIDAD, CONDICION_LABORAL, PROFESION } from '../constants';
+import { LOGO_BASE64 } from './logoBase64';
 
 export const generateReceipt = (doc, employee, data, startY = 15) => {
   const pageWidth = doc.internal.pageSize.width;
   
-  // Header
-  doc.setFontSize(18);
+  // Logo
+  try {
+    doc.addImage(LOGO_BASE64, 'JPEG', 14, startY, 25, 25);
+  } catch (e) {
+    console.warn('Could not add logo:', e);
+  }
+
+  // Header (offset to the right of the logo)
+  doc.setFontSize(16);
   doc.setFont('helvetica', 'bold');
-  doc.text('Salud Zulia', 14, startY + 7);
-  doc.setFontSize(12);
+  doc.text('Plan Médico Salud Zulia', 44, startY + 8);
+  doc.setFontSize(11);
   doc.setFont('helvetica', 'normal');
-  doc.text('Recibo de Pago de Nómina', 14, startY + 15);
+  doc.text('Recibo de Pago de Nómina', 44, startY + 15);
+  doc.setFontSize(8);
+  doc.setTextColor(100);
+  doc.text('Desde 2000', 44, startY + 20);
+  doc.setTextColor(0);
   
   // Employee Data
   doc.setFontSize(12);
   doc.setFont('helvetica', 'bold');
-  doc.text('Datos del Trabajador', 14, startY + 28);
+  doc.text('Datos del Trabajador', 14, startY + 35);
   doc.setFontSize(10);
   doc.setFont('helvetica', 'normal');
   
@@ -33,7 +45,7 @@ export const generateReceipt = (doc, employee, data, startY = 15) => {
   ];
 
   autoTable(doc, {
-    startY: startY + 33,
+    startY: startY + 40,
     body: empData,
     theme: 'plain',
     styles: { cellPadding: 2, fontSize: 10 },
