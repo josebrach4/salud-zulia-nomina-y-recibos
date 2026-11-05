@@ -4,7 +4,16 @@ import { Download, Upload } from 'lucide-react';
 import * as XLSX from 'xlsx';
 
 export default function NominaTotalView({ employees, searchTerm }) {
-  const [tasa, setTasa] = useState('980');
+  const [tasa, setTasa] = useState(() => {
+    return localStorage.getItem('salud_zulia_tasa') || '980';
+  });
+
+  // Persist tasa to localStorage whenever it changes
+  useEffect(() => {
+    if (tasa) {
+      localStorage.setItem('salud_zulia_tasa', tasa);
+    }
+  }, [tasa]);
   const [payrollData, setPayrollData] = useState({});
 
   const activeEmployees = employees.filter(emp => emp.tipoMovimiento === "160");

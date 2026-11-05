@@ -6,7 +6,16 @@ import { generateReceipt } from '../utils/receiptGenerator';
 export default function BatchReceiptsView({ employees, searchTerm }) {
   const [selectedSede, setSelectedSede] = useState('ALL');
   const [periodo, setPeriodo] = useState('16/02/2026 Al 28/02/2026');
-  const [tasa, setTasa] = useState('40.00'); // Default Tasa
+  const [tasa, setTasa] = useState(() => {
+    return localStorage.getItem('salud_zulia_tasa') || '980';
+  });
+
+  // Persist tasa to localStorage whenever it changes
+  useEffect(() => {
+    if (tasa) {
+      localStorage.setItem('salud_zulia_tasa', tasa);
+    }
+  }, [tasa]);
   const [payrollData, setPayrollData] = useState({});
 
   // Unique sedes
