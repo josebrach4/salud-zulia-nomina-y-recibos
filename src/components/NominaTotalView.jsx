@@ -5,7 +5,7 @@ import * as XLSX from 'xlsx';
 
 export default function NominaTotalView({ employees, searchTerm }) {
   const [tasa, setTasa] = useState(() => {
-    return localStorage.getItem('salud_zulia_tasa') || '980';
+    return localStorage.getItem('salud_zulia_tasa') || '';
   });
 
   // Persist tasa to localStorage whenever it changes

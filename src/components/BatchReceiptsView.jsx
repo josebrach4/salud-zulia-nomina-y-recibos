@@ -7,7 +7,7 @@ export default function BatchReceiptsView({ employees, searchTerm }) {
   const [selectedSede, setSelectedSede] = useState('ALL');
   const [periodo, setPeriodo] = useState('16/02/2026 Al 28/02/2026');
   const [tasa, setTasa] = useState(() => {
-    return localStorage.getItem('salud_zulia_tasa') || '980';
+    return localStorage.getItem('salud_zulia_tasa') || '';
   });
 
   // Persist tasa to localStorage whenever it changes
