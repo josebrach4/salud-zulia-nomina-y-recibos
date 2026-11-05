@@ -21,7 +21,7 @@ export const generateReceipt = (doc, employee, data, startY = 15) => {
   // Subtitle below logo
   doc.setFontSize(12);
   doc.setFont('helvetica', 'bold');
-  doc.text('Recibo de Pago de Nómina', pageWidth / 2, startY + 56, { align: 'center' });
+  doc.text('Recibo de Pago', pageWidth / 2, startY + 56, { align: 'center' });
   doc.setFont('helvetica', 'normal');
   
   // Employee Data

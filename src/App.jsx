@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Users, DollarSign, Activity, Plus, Search, Upload, FileBarChart, Printer } from 'lucide-react';
+import { Users, DollarSign, Activity, Plus, Search, Upload, FileBarChart, Printer, Trash2 } from 'lucide-react';
 import * as XLSX from 'xlsx';
 import axios from 'axios';
 import { 
@@ -54,6 +54,19 @@ function App() {
   const handleEdit = (employee) => {
     setEmployeeToEdit(employee);
     setIsModalOpen(true);
+  };
+
+  const handleDelete = async (employee, e) => {
+    e.stopPropagation();
+    if (window.confirm(`¿Estás seguro de eliminar a ${employee.nombresApellidos}?`)) {
+      try {
+        await axios.delete(`${API_URL}/empleados/${employee.id}`);
+        setEmployees(employees.filter(emp => emp.id !== employee.id));
+      } catch (error) {
+        console.error("Error al eliminar:", error);
+        alert("Hubo un error al eliminar el empleado.");
+      }
+    }
   };
 
   const handleFileUpload = (e) => {
@@ -307,6 +320,7 @@ function App() {
                       <th>Ingreso</th>
                       <th>Salario</th>
                       <th>Estado</th>
+                      <th>Acciones</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -335,11 +349,34 @@ function App() {
                               {TIPO_MOVIMIENTO[emp.tipoMovimiento]}
                             </span>
                           </td>
+                          <td>
+                            <button
+                              onClick={(e) => handleDelete(emp, e)}
+                              style={{
+                                background: 'none',
+                                border: '1px solid #fee2e2',
+                                borderRadius: '6px',
+                                padding: '6px 8px',
+                                cursor: 'pointer',
+                                color: '#ef4444',
+                                display: 'flex',
+                                alignItems: 'center',
+                                gap: '4px',
+                                fontSize: '0.75rem',
+                                transition: 'all 0.2s'
+                              }}
+                              onMouseEnter={(e) => { e.target.style.background = '#fef2f2'; }}
+                              onMouseLeave={(e) => { e.target.style.background = 'none'; }}
+                              title="Eliminar empleado"
+                            >
+                              <Trash2 size={14} /> Eliminar
+                            </button>
+                          </td>
                         </tr>
                       ))
                     ) : (
                       <tr>
-                        <td colSpan="6" style={{ textAlign: 'center', padding: '3rem', color: 'var(--text-muted)' }}>
+                        <td colSpan="7" style={{ textAlign: 'center', padding: '3rem', color: 'var(--text-muted)' }}>
                           No se encontraron empleados.
                         </td>
                       </tr>
