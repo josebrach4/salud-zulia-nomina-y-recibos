@@ -6,15 +6,15 @@ import BatchPrintModal from './components/BatchPrintModal';
 import SettingsModal from './components/SettingsModal';
 import SheetSyncModal from './components/SheetSyncModal';
 import defaultEmployees from './data/defaultEmployees.json';
-import { Printer, Check, Copy, Share2, ExternalLink, Download } from 'lucide-react';
-import { formatBs, formatUSD } from './utils/formatters';
+import { Printer, Check, Copy, FileText, Layers, Scissors } from 'lucide-react';
+import { formatBs } from './utils/formatters';
 
 const DEFAULT_CONFIG = {
   companyName: 'PLAN MEDICO SALUD ZULIA, C.A',
   rif: 'J 29767801-8',
   address: 'Calle 100 Casa Nro. 19F-200 Urb. Urdaneta Sector Sabaneta, Maracaibo',
   periodFrom: '01/01/2025',
-  periodTo: '31/12/2025'
+  periodTo: '31/12/2026'
 };
 
 export default function App() {
@@ -27,8 +27,23 @@ export default function App() {
 
   const [companyConfig, setCompanyConfig] = useState(() => {
     const saved = localStorage.getItem('sz_config_v1');
-    return saved ? JSON.parse(saved) : DEFAULT_CONFIG;
+    if (saved) {
+      try {
+        const parsed = JSON.parse(saved);
+        // Ensure periodTo is 31/12/2026 if was previously 2025
+        if (parsed.periodTo === '31/12/2025') {
+          parsed.periodTo = '31/12/2026';
+        }
+        return parsed;
+      } catch (e) {
+        return DEFAULT_CONFIG;
+      }
+    }
+    return DEFAULT_CONFIG;
   });
+
+  // Print mode: 'two_per_page' (Original + Copia) or 'single_page' (1 recibo por hoja)
+  const [printMode, setPrintMode] = useState('two_per_page');
 
   const [isBatchPrintOpen, setIsBatchPrintOpen] = useState(false);
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
@@ -72,9 +87,7 @@ export default function App() {
     setTimeout(() => setCopiedLink(false), 2000);
   };
 
-  // Totals calculations
   const totalNetoBs = employees.reduce((sum, e) => sum + (e.totalCancelarNum || 0), 0);
-  const totalNetoUSD = employees.reduce((sum, e) => sum + (e.totalUsdNum || e.usdEquivNum || 0), 0);
 
   return (
     <div className="min-h-screen bg-slate-100 flex flex-col font-sans">
@@ -82,7 +95,6 @@ export default function App() {
       <Header
         employeesCount={employees.length}
         totalNetoBs={totalNetoBs}
-        totalNetoUSD={totalNetoUSD}
         currentEmployee={selectedEmployee}
         onOpenBatchPrint={() => setIsBatchPrintOpen(true)}
         onOpenSettings={() => setIsSettingsOpen(true)}
@@ -92,26 +104,50 @@ export default function App() {
 
       {/* Main Content Area */}
       <div className="flex-1 flex flex-col md:flex-row overflow-hidden">
-        {/* Left Sidebar: Employee Search & Selector */}
+        {/* Left Sidebar */}
         <EmployeeList
           employees={employees}
           selectedId={selectedEmployee?.id}
           onSelectEmployee={(emp) => setSelectedEmployee(emp)}
         />
 
-        {/* Right / Center: Interactive Preview & Print Action */}
+        {/* Right / Center: Receipt View */}
         <main className="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8 flex flex-col items-center">
-          {/* Top Quick Bar for Current Receipt */}
+          {/* Quick Action Bar */}
           <div className="no-print w-full max-w-[800px] mb-4 flex flex-wrap items-center justify-between gap-3 bg-white p-3 rounded-xl border border-slate-200 shadow-xs">
+            {/* Format Toggle: 2 por hoja vs 1 por hoja */}
             <div className="flex items-center gap-2">
-              <span className="text-xs font-semibold text-slate-500">
-                Trabajador seleccionado:
+              <span className="text-xs font-bold text-slate-700 flex items-center gap-1">
+                <Scissors className="w-3.5 h-3.5 text-emerald-600" />
+                Formato de hoja:
               </span>
-              <span className="text-xs font-bold text-slate-900 bg-slate-100 px-2.5 py-1 rounded-md">
-                {selectedEmployee?.nombre} ({selectedEmployee?.cargo})
-              </span>
+              <div className="bg-slate-100 p-0.5 rounded-lg flex gap-1 text-xs">
+                <button
+                  onClick={() => setPrintMode('two_per_page')}
+                  className={`px-2.5 py-1 rounded-md font-semibold transition cursor-pointer ${
+                    printMode === 'two_per_page'
+                      ? 'bg-emerald-600 text-white shadow-xs'
+                      : 'text-slate-600 hover:text-slate-900'
+                  }`}
+                  title="Imprime 2 recibos en una sola hoja carta: Original para el trabajador y Copia para archivo"
+                >
+                  2 en 1 hoja (Original + Copia)
+                </button>
+                <button
+                  onClick={() => setPrintMode('single_page')}
+                  className={`px-2.5 py-1 rounded-md font-semibold transition cursor-pointer ${
+                    printMode === 'single_page'
+                      ? 'bg-emerald-600 text-white shadow-xs'
+                      : 'text-slate-600 hover:text-slate-900'
+                  }`}
+                  title="Imprime 1 recibo en la hoja completa"
+                >
+                  1 por hoja
+                </button>
+              </div>
             </div>
 
+            {/* Actions: Share & Print */}
             <div className="flex items-center gap-2">
               <button
                 onClick={handleCopyDirectLink}
@@ -133,20 +169,21 @@ export default function App() {
 
               <button
                 onClick={handlePrintCurrent}
-                className="flex items-center gap-1.5 px-3.5 py-1.5 text-xs font-semibold text-white bg-emerald-600 hover:bg-emerald-500 rounded-lg shadow-xs transition active:scale-95 cursor-pointer"
+                className="flex items-center gap-1.5 px-4 py-1.5 text-xs font-semibold text-white bg-emerald-600 hover:bg-emerald-500 rounded-lg shadow-xs transition active:scale-95 cursor-pointer"
               >
-                <Printer className="w-3.5 h-3.5" />
+                <Printer className="w-4 h-4" />
                 Imprimir / PDF
               </button>
             </div>
           </div>
 
-          {/* Paper View Container with Card styling for screen, pure sheet for print */}
+          {/* Paper View Container */}
           <div className="receipt-container w-full max-w-[800px] bg-white rounded-xl shadow-lg border border-slate-200/80 print:shadow-none print:border-none print:w-full print:max-w-none print:m-0 print:p-0">
             {selectedEmployee ? (
               <ReceiptView
                 employee={selectedEmployee}
                 companyConfig={companyConfig}
+                printMode={printMode}
               />
             ) : (
               <div className="p-12 text-center text-slate-400">
@@ -155,9 +192,9 @@ export default function App() {
             )}
           </div>
 
-          {/* Quick instructions footer */}
+          {/* Tips */}
           <div className="no-print mt-6 text-center text-xs text-slate-500 max-w-md">
-            💡 <strong>Consejo para imprimir:</strong> Al hacer clic en <em>Imprimir / PDF</em>, en el menú de impresión de tu navegador selecciona <strong>Guardar como PDF</strong> o tu impresora física. La página ya está optimizada para tamaño carta.
+            💡 <strong>Modo 2 en 1 hoja:</strong> Al imprimir, la hoja se dividirá automáticamente en dos recibos (uno para el empleado y otro para el archivo de la empresa) con una línea punteada central para cortar.
           </div>
         </main>
       </div>

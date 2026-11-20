@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Sliders, X, Check, Building } from 'lucide-react';
+import { Sliders, X, Check } from 'lucide-react';
 
 export default function SettingsModal({
   isOpen,
@@ -96,7 +96,7 @@ export default function SettingsModal({
                 type="text"
                 value={formData.periodTo}
                 onChange={(e) => setFormData({ ...formData, periodTo: e.target.value })}
-                placeholder="31/12/2025"
+                placeholder="31/12/2026"
                 className="w-full px-3 py-1.5 border border-slate-300 rounded-lg focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 outline-none"
               />
             </div>

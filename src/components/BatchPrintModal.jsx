@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import { Printer, X, CheckSquare, Square, FileText } from 'lucide-react';
-import ReceiptView from './ReceiptView';
+import { Printer, X, CheckSquare, Square, FileText, Layers, Scissors } from 'lucide-react';
+import ReceiptView, { SingleReceiptSlip } from './ReceiptView';
 
 export default function BatchPrintModal({
   isOpen,
@@ -9,13 +9,10 @@ export default function BatchPrintModal({
   companyConfig
 }) {
   const [selectedIds, setSelectedIds] = useState(() => new Set(employees.map(e => e.id)));
-  const [filterDept, setFilterDept] = useState('ALL');
+  const [batchMode, setBatchMode] = useState('two_per_worker'); // 'two_per_worker', 'two_different_workers', 'single'
   const [isPrinting, setIsPrinting] = useState(false);
 
   if (!isOpen) return null;
-
-  // Departments
-  const departments = Array.from(new Set(employees.map(e => e.departamento))).sort();
 
   const handleToggle = (id) => {
     setSelectedIds(prev => {
@@ -44,10 +41,18 @@ export default function BatchPrintModal({
     }, 400);
   };
 
+  // Group into pairs if two different workers per page
+  const pairs = [];
+  if (batchMode === 'two_different_workers') {
+    for (let i = 0; i < selectedList.length; i += 2) {
+      pairs.push([selectedList[i], selectedList[i + 1]]);
+    }
+  }
+
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs">
       {/* Modal Container */}
-      <div className="no-print bg-white rounded-xl shadow-2xl max-w-2xl w-full max-h-[90vh] flex flex-col border border-slate-200">
+      <div className="no-print bg-white rounded-xl shadow-2xl max-w-2xl w-full max-h-[92vh] flex flex-col border border-slate-200">
         {/* Header */}
         <div className="p-4 border-b border-slate-200 flex items-center justify-between bg-slate-50 rounded-t-xl">
           <div className="flex items-center gap-2">
@@ -57,7 +62,7 @@ export default function BatchPrintModal({
                 Impresión Masiva de Recibos
               </h2>
               <p className="text-xs text-slate-500">
-                Seleccione los empleados para generar sus recibos en lote
+                Imprima la nómina completa o empleados seleccionados
               </p>
             </div>
           </div>
@@ -69,7 +74,47 @@ export default function BatchPrintModal({
           </button>
         </div>
 
-        {/* Filters & Selection Controls */}
+        {/* Print Layout Options */}
+        <div className="p-3 bg-blue-50/70 border-b border-blue-100 flex flex-wrap items-center justify-between gap-2">
+          <span className="text-xs font-bold text-blue-900 flex items-center gap-1.5">
+            <Layers className="w-4 h-4 text-blue-600" />
+            Formato de Impresión:
+          </span>
+          <div className="flex items-center gap-1.5 text-xs">
+            <button
+              onClick={() => setBatchMode('two_per_worker')}
+              className={`px-2.5 py-1 rounded-md font-semibold transition cursor-pointer ${
+                batchMode === 'two_per_worker'
+                  ? 'bg-blue-600 text-white shadow-xs'
+                  : 'bg-white text-slate-700 hover:bg-slate-100 border border-slate-200'
+              }`}
+            >
+              2 por hoja (Original + Copia)
+            </button>
+            <button
+              onClick={() => setBatchMode('two_different_workers')}
+              className={`px-2.5 py-1 rounded-md font-semibold transition cursor-pointer ${
+                batchMode === 'two_different_workers'
+                  ? 'bg-blue-600 text-white shadow-xs'
+                  : 'bg-white text-slate-700 hover:bg-slate-100 border border-slate-200'
+              }`}
+            >
+              Ahorro (2 empleados x hoja)
+            </button>
+            <button
+              onClick={() => setBatchMode('single')}
+              className={`px-2.5 py-1 rounded-md font-semibold transition cursor-pointer ${
+                batchMode === 'single'
+                  ? 'bg-blue-600 text-white shadow-xs'
+                  : 'bg-white text-slate-700 hover:bg-slate-100 border border-slate-200'
+              }`}
+            >
+              1 por hoja
+            </button>
+          </div>
+        </div>
+
+        {/* Selection Controls */}
         <div className="p-3 border-b border-slate-100 bg-white flex flex-wrap items-center justify-between gap-2 text-xs">
           <div className="flex items-center gap-2">
             <button
@@ -88,12 +133,22 @@ export default function BatchPrintModal({
           </div>
 
           <div className="font-semibold text-slate-700">
-            {selectedList.length} seleccionados para imprimir
+            {selectedList.length} seleccionados
+            {batchMode === 'two_different_workers' && (
+              <span className="text-emerald-700 font-bold ml-1">
+                (ocupará solo {Math.ceil(selectedList.length / 2)} hojas)
+              </span>
+            )}
+            {batchMode === 'two_per_worker' && (
+              <span className="text-blue-700 font-bold ml-1">
+                ({selectedList.length} hojas: 2 recibos por empleado)
+              </span>
+            )}
           </div>
         </div>
 
         {/* Employee Checkboxes */}
-        <div className="flex-1 overflow-y-auto p-3 divide-y divide-slate-100 max-h-[450px]">
+        <div className="flex-1 overflow-y-auto p-3 divide-y divide-slate-100 max-h-[380px]">
           {employees.map(emp => {
             const checked = selectedIds.has(emp.id);
             return (
@@ -126,7 +181,9 @@ export default function BatchPrintModal({
         {/* Footer Actions */}
         <div className="p-3 border-t border-slate-200 bg-slate-50 rounded-b-xl flex justify-between items-center">
           <div className="text-xs text-slate-500">
-            Cada recibo se imprimirá en una página separada lista para entregar.
+            {batchMode === 'two_per_worker' && 'Cada hoja carta contiene 2 copias con línea de corte.'}
+            {batchMode === 'two_different_workers' && 'Se imprimen 2 empleados distintos por hoja para ahorrar papel.'}
+            {batchMode === 'single' && 'Cada empleado se imprimirá en 1 hoja completa.'}
           </div>
           <div className="flex gap-2">
             <button
@@ -147,13 +204,56 @@ export default function BatchPrintModal({
         </div>
       </div>
 
-      {/* Hidden printable container for all selected receipts */}
+      {/* Hidden printable container for batch printing */}
       <div className="hidden print:block print-container">
-        {selectedList.map((emp, idx) => (
-          <div key={emp.id} className={idx < selectedList.length - 1 ? 'page-break' : ''}>
-            <ReceiptView employee={emp} companyConfig={companyConfig} />
-          </div>
-        ))}
+        {batchMode === 'two_per_worker' && (
+          selectedList.map((emp, idx) => (
+            <div key={emp.id} className={idx < selectedList.length - 1 ? 'page-break' : ''}>
+              <ReceiptView employee={emp} companyConfig={companyConfig} printMode="two_per_page" />
+            </div>
+          ))
+        )}
+
+        {batchMode === 'single' && (
+          selectedList.map((emp, idx) => (
+            <div key={emp.id} className={idx < selectedList.length - 1 ? 'page-break' : ''}>
+              <ReceiptView employee={emp} companyConfig={companyConfig} printMode="single_page" />
+            </div>
+          ))
+        )}
+
+        {batchMode === 'two_different_workers' && (
+          pairs.map((pair, idx) => (
+            <div key={idx} className={idx < pairs.length - 1 ? 'page-break' : ''}>
+              <div className="receipt-page bg-white text-black max-w-[800px] mx-auto">
+                {pair[0] && (
+                  <SingleReceiptSlip
+                    employee={pair[0]}
+                    companyConfig={companyConfig}
+                    compact={true}
+                  />
+                )}
+                {pair[1] && (
+                  <>
+                    <div className="relative py-2 select-none">
+                      <div className="border-b-2 border-dashed border-gray-400 w-full"></div>
+                      <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 bg-white px-3 text-[10px] text-gray-500 font-semibold tracking-wider flex items-center gap-1.5 border border-dashed border-gray-300 rounded-full">
+                        <span>✂</span>
+                        <span>CORTAR AQUÍ</span>
+                        <span>✂</span>
+                      </div>
+                    </div>
+                    <SingleReceiptSlip
+                      employee={pair[1]}
+                      companyConfig={companyConfig}
+                      compact={true}
+                    />
+                  </>
+                )}
+              </div>
+            </div>
+          ))
+        )}
       </div>
     </div>
   );
